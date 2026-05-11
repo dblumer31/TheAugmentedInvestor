@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Augmented Investor — Editorial Pipeline v3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0b0b0d;
+  --surface: #111115;
+  --surface2: #16161c;
+  --border: #222228;
+  --border2: #2e2e38;
+  --text: #e4e0d8;
+  --muted: #52525e;
+  --muted2: #78788a;
+  --gold: #c9a84c;
+  --gold2: #e8c870;
+  --gdim: rgba(201,168,76,0.12);
+  --red: #b83020;
+  --red2: #e05040;
+  --rdim: rgba(184,48,32,0.1);
+  --green: #287a45;
+  --green2: #38b068;
+  --gdim2: rgba(56,176,104,0.1);
+  --blue2: #5898e8;
+  --bdim: rgba(88,152,232,0.1);
+  --amber: #d4840a;
+  --amber2: #f0a830;
+  --adim: rgba(212,132,10,0.1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+
+/* ══ TOPBAR ══ */
+.topbar{height:52px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:200;background:rgba(11,11,13,0.97);backdrop-filter:blur(12px);}
+.logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text);}
+.logo em{color:var(--gold);font-style:normal;}
+.sttrack{display:flex;align-items:center;gap:1px;flex-wrap:wrap;}
+.st{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:4px 9px;border:1px solid transparent;border-radius:2px;transition:all .25s;display:flex;align-items:center;gap:4px;}
+.st .d{width:4px;height:4px;border-radius:50%;background:var(--muted);transition:all .25s;flex-shrink:0;}
+.st.active{color:var(--gold);border-color:rgba(201,168,76,.25);background:var(--gdim);}
+.st.active .d{background:var(--gold);box-shadow:0 0 5px var(--gold);animation:dp 1s infinite;}
+.st.done{color:var(--green2);}
+.st.done .d{background:var(--green2);}
+.st.gate{color:var(--amber2);border-color:rgba(212,132,10,.3);background:var(--adim);}
+.st.gate .d{background:var(--amber2);animation:dp 1s infinite;}
+.st-sep{color:var(--border2);font-size:10px;font-family:'JetBrains Mono',monospace;padding:0 1px;}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ══ LAYOUT ══ */
+.main{max-width:940px;margin:0 auto;padding:40px 20px 100px;}
+
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ══ PROMPT BUILDER ══ */
+.pb{background:var(--surface);border:1px solid var(--border);margin-bottom:28px;}
+.pb-head{padding:22px 22px 0;}
+.pb-title{font-family:'Playfair Display',serif;font-size:clamp(22px,3.5vw,34px);font-weight:900;letter-spacing:-.02em;line-height:1.1;color:var(--text);margin-bottom:6px;}
+.pb-title em{color:var(--gold);font-style:italic;}
+.pb-sub{font-size:12px;color:var(--muted2);margin-bottom:18px;line-height:1.5;}
+.rough-row{display:flex;gap:0;margin-bottom:16px;}
+textarea.ri{flex:1;background:var(--bg);border:1px solid var(--border2);border-right:none;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;font-weight:500;padding:13px 16px;outline:none;resize:none;min-height:52px;line-height:1.4;transition:border-color .2s;}
+textarea.ri:focus{border-color:var(--gold);}
+textarea.ri::placeholder{color:var(--muted);font-weight:400;font-size:13px;}
+.rbtn{background:var(--surface2);border:1px solid var(--border2);color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:13px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;align-self:stretch;display:flex;align-items:center;gap:5px;}
+.rbtn:hover{border-color:var(--gold);color:var(--gold);background:var(--gdim);}
+.rbtn:disabled{opacity:.35;cursor:not-allowed;}
+
+.scope-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;padding:0 22px 16px;}
+.sf label{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);margin-bottom:5px;}
+.sf select{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:'Syne',sans-serif;font-size:12px;font-weight:500;padding:8px 10px;outline:none;border-radius:2px;appearance:none;transition:border-color .2s;cursor:pointer;}
+.sf select:focus{border-color:var(--gold);}
+.sf select option{background:#1a1a22;}
+
+.refined-block{display:none;margin:0 22px 16px;background:var(--bg);border:1px solid rgba(201,168,76,.22);border-left:3px solid var(--gold);padding:12px 16px;}
+.refined-block.on{display:block;}
+.rl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+textarea.re{width:100%;background:transparent;border:none;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;line-height:1.65;font-weight:400;resize:vertical;outline:none;min-height:72px;}
+.rh{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:.06em;}
+
+.pb-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:var(--surface2);}
+.ctrl-row{display:flex;gap:18px;flex-wrap:wrap;}
+.cg{display:flex;align-items:center;gap:6px;}
+.cl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.chip{background:transparent;border:1px solid var(--border2);color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;cursor:pointer;transition:all .15s;border-radius:2px;}
+.chip:hover{border-color:var(--gold);color:var(--gold);}
+.chip.on{border-color:var(--gold);color:var(--gold);background:var(--gdim);}
+.run-btn{background:var(--gold);border:none;color:#0b0b0d;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:12px 28px;cursor:pointer;transition:all .15s;border-radius:2px;}
+.run-btn:hover{background:var(--gold2);}
+.run-btn:active{transform:scale(.98);}
+.run-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+/* ══ PIPELINE ══ */
+.pipeline{display:none;margin-bottom:24px;}
+.pipeline.on{display:block;}
+.err-bar{display:none;background:var(--rdim);border:1px solid rgba(184,48,32,.3);padding:11px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red2);margin-bottom:10px;line-height:1.6;}
+.err-bar.on{display:block;}
+
+.stage{border:1px solid var(--border);margin-bottom:2px;overflow:hidden;transition:border-color .3s;}
+.stage.active{border-color:rgba(201,168,76,.35);}
+.stage.done{border-color:rgba(56,176,104,.25);}
+.stage.gate{border-color:rgba(212,132,10,.35);}
+.stage.err{border-color:rgba(184,48,32,.35);}
+.stage-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);}
+.sn{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);min-width:18px;}
+.sname{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);flex:1;transition:color .25s;}
+.stage.active .sname{color:var(--gold);}
+.stage.done .sname{color:var(--green2);}
+.stage.gate .sname{color:var(--amber2);}
+.stage.err .sname{color:var(--red2);}
+.sst{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);transition:color .25s;}
+.stage.active .sst{color:var(--gold);}
+.stage.done .sst{color:var(--green2);}
+.stage.gate .sst{color:var(--amber2);}
+.stage.err .sst{color:var(--red2);}
+.sbar{height:2px;background:var(--border);}
+.sprog{height:100%;width:0%;background:var(--gold);transition:width .5s ease;}
+.stage.done .sprog{width:100%;background:var(--green2);}
+.stage.gate .sprog{width:100%;background:var(--amber2);}
+.stage.err .sprog{width:100%;background:var(--red);}
+.slog{display:none;padding:8px 16px 12px 46px;background:var(--surface);border-top:1px solid var(--border);}
+.stage.active .slog,.stage.done .slog,.stage.gate .slog,.stage.err .slog{display:block;}
+.ll{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);line-height:1.8;opacity:0;animation:fi .3s forwards;}
+@keyframes fi{to{opacity:1}}
+.ll.ok{color:var(--green2);}
+.ll.warn{color:var(--amber2);}
+.ll.err{color:var(--red2);}
+.ll.info{color:var(--blue2);}
+
+/* ══ THESIS GATE ══ */
+.thesis-gate{display:none;margin-bottom:24px;}
+.thesis-gate.on{display:block;}
+.tg-card{background:var(--surface);border:1px solid rgba(212,132,10,.3);}
+.tg-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--adim);}
+.tg-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber2);}
+.tg-conf{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);}
+.tg-body{padding:18px 20px;}
+
+.thesis-stmt{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--text);line-height:1.45;margin-bottom:16px;padding-left:12px;border-left:3px solid var(--amber2);}
+
+.cases-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+@media(max-width:600px){.cases-grid{grid-template-columns:1fr;}}
+.case-box{background:var(--bg);border:1px solid var(--border);padding:10px 12px;}
+.case-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;}
+.case-lbl.bull{color:var(--green2);}
+.case-lbl.base{color:var(--blue2);}
+.case-lbl.bear{color:var(--red2);}
+.case-txt{font-size:12px;color:var(--muted2);line-height:1.55;}
+
+.misp-box{background:var(--gdim);border:1px solid rgba(201,168,76,.2);padding:11px 14px;margin-bottom:14px;}
+.misp-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.misp-txt{font-size:12px;color:var(--text);line-height:1.6;}
+
+.contra-box{background:var(--surface2);border:1px solid var(--border2);padding:11px 14px;margin-bottom:14px;}
+.contra-q{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-bottom:5px;letter-spacing:.04em;}
+.contra-a{font-size:12px;color:var(--text);line-height:1.6;}
+
+/* Scenario math warning */
+.scenario-note{background:var(--adim);border:1px solid rgba(212,132,10,.25);padding:9px 14px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--amber2);line-height:1.6;letter-spacing:.03em;}
+
+/* Revision box */
+.rev-area{margin-top:14px;}
+.rev-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:6px;}
+textarea.rev-input{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:'Syne',sans-serif;font-size:12px;line-height:1.6;padding:10px 12px;outline:none;resize:vertical;min-height:64px;transition:border-color .2s;border-radius:2px;}
+textarea.rev-input:focus{border-color:var(--amber2);}
+textarea.rev-input::placeholder{color:var(--muted);}
+
+.tg-actions{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;background:var(--surface2);}
+.tg-btn{background:transparent;border:1px solid var(--border2);color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:9px 18px;cursor:pointer;transition:all .15s;border-radius:2px;}
+.tg-btn:hover{border-color:var(--text);color:var(--text);}
+.tg-btn.approve{background:var(--green);border-color:var(--green);color:#fff;font-weight:700;}
+.tg-btn.approve:hover{background:var(--green2);border-color:var(--green2);}
+.tg-btn.revise{border-color:rgba(212,132,10,.4);color:var(--amber2);}
+.tg-btn.revise:hover{background:var(--adim);border-color:var(--amber2);}
+.tg-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* ══ FACT CHECK PANEL ══ */
+.fc-panel{display:none;margin-bottom:24px;}
+.fc-panel.on{display:block;}
+.fc-card{background:var(--surface);border:1px solid var(--border);}
+.fc-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.fc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text);}
+.fc-summary{font-family:'JetBrains Mono',monospace;font-size:9px;}
+.fc-body{padding:16px 20px;}
+
+.fc-flag{display:flex;gap:10px;padding:9px 12px;margin-bottom:6px;border:1px solid var(--border);border-left:3px solid;border-radius:0 2px 2px 0;}
+.fc-flag.f-err{border-left-color:var(--red2);background:var(--rdim);}
+.fc-flag.f-warn{border-left-color:var(--amber2);background:var(--adim);}
+.fc-flag.f-ok{border-left-color:var(--green2);background:var(--gdim2);}
+.fc-flag.f-info{border-left-color:var(--blue2);background:var(--bdim);}
+
+.fc-flag-type{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;min-width:90px;padding-top:1px;}
+.f-err .fc-flag-type{color:var(--red2);}
+.f-warn .fc-flag-type{color:var(--amber2);}
+.f-ok .fc-flag-type{color:var(--green2);}
+.f-info .fc-flag-type{color:var(--blue2);}
+
+.fc-flag-txt{font-size:12px;color:var(--text);line-height:1.55;flex:1;}
+.fc-clean{padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green2);text-align:center;}
+.fc-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);padding:10px 0 6px;margin-top:6px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.fc-section-label:first-child{border-top:none;margin-top:0;}
+.fc-section-addendum{color:var(--purple2,#a878f0);}
+.fc-section-generalize{color:var(--amber2);}
+.fc-section-srcq{color:var(--blue2);}
+.fc-section-ok{color:var(--green2);}
+.fc-count{font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 7px;border-radius:2px;background:var(--rdim);color:var(--red2);border:1px solid rgba(184,48,32,.2);}
+.fc-count-amber{background:var(--adim);color:var(--amber2);border-color:rgba(212,132,10,.2);}
+.fc-count-green{background:var(--gdim2);color:var(--green2);border-color:rgba(56,176,104,.2);}
+
+/* ══ REVIEW ══ */
+.review-sec{display:none;}
+.review-sec.on{display:block;}
+.rv-card{background:var(--surface);border:1px solid var(--border);}
+.rv-head{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.rv-title{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);}
+.badges{display:flex;gap:6px;flex-wrap:wrap;}
+.badge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;border:1px solid;}
+.bg{color:var(--gold);border-color:rgba(201,168,76,.3);background:var(--gdim);}
+.bgr{color:var(--green2);border-color:rgba(56,176,104,.3);background:var(--gdim2);}
+.bb{color:var(--blue2);border-color:rgba(88,152,232,.3);background:var(--bdim);}
+.bw{color:var(--amber2);border-color:rgba(212,132,10,.3);background:var(--adim);}
+
+/* Newsletter */
+.nl{background:#f7f3ec;color:#1a1710;padding:48px 56px;}
+@media(max-width:580px){.nl{padding:24px 18px;}}
+.nl-meta{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#8a8070;margin-bottom:7px;}
+.nl-title{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,38px);font-weight:900;letter-spacing:-.02em;line-height:1.1;color:#1a1710;margin-bottom:7px;}
+.nl-sub{font-family:'Playfair Display',serif;font-size:15px;font-style:italic;color:#6a6050;margin-bottom:18px;}
+.nl-rule{border:none;border-top:2px solid #1a1710;margin:16px 0;}
+.nl-rule-sm{border:none;border-top:1px solid #d0c8b8;margin:18px 0;}
+.nl-lede{font-family:'Playfair Display',serif;font-size:17px;line-height:1.65;color:#1a1710;margin-bottom:16px;}
+.nl-body{font-family:'Syne',sans-serif;font-size:14px;line-height:1.8;color:#3a3628;}
+.nl-body p{margin-bottom:14px;}
+.nl-body h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#1a1710;margin:26px 0 8px;}
+.nl-body h3{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#b83020;margin:20px 0 7px;}
+.nl-body strong{color:#1a1710;}
+.nl-body em{font-family:'Playfair Display',serif;font-style:italic;}
+.nl-pq{border-left:3px solid #b83020;margin:20px 0;padding:11px 16px;background:rgba(184,48,32,.04);}
+.nl-pq p{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:#1a1710;line-height:1.5;margin:0;}
+/* Scenario math label */
+.nl-scenario{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#8a6820;background:rgba(212,132,10,.08);border:1px solid rgba(212,132,10,.2);padding:1px 6px;border-radius:2px;margin-left:4px;vertical-align:middle;}
+
+/* Sources table */
+.nl-sources{margin-top:20px;padding-top:14px;border-top:1px solid #d0c8b8;}
+.nl-src-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8a8070;margin-bottom:8px;}
+.nl-src-item{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6a6050;margin-bottom:6px;line-height:1.55;padding-left:10px;border-left:2px solid #d0c8b8;}
+.nl-src-item a{color:#5a7060;}
+.nl-src-quote{font-size:10px;color:#8a8878;font-style:italic;margin-top:2px;}
+.nl-footer{margin-top:24px;padding-top:12px;border-top:1px solid #d0c8b8;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8a8070;display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;}
+
+.rv-actions{padding:12px 20px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:8px;flex-wrap:wrap;}
+.act{background:transparent;border:1px solid var(--border2);color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;cursor:pointer;transition:all .15s;border-radius:2px;}
+.act:hover{border-color:var(--text);color:var(--text);}
+.act.approve{background:var(--green);border-color:var(--green);color:#fff;font-weight:700;}
+.act.approve:hover{background:var(--green2);border-color:var(--green2);}
+.act.rewrite{border-color:rgba(201,168,76,.4);color:var(--gold);}
+.act.rewrite:hover{background:var(--gdim);border-color:var(--gold);}
+.approved-bar{display:none;background:rgba(40,122,69,.1);border:1px solid rgba(56,176,104,.3);padding:12px 20px;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green2);letter-spacing:.06em;}
+.approved-bar.on{display:flex;align-items:center;gap:8px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">The Augmented <em>Investor</em></div>
+  <div class="sttrack">
+    <div class="st" id="ps0"><div class="d"></div>Scope</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps1"><div class="d"></div>Research</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps2"><div class="d"></div>Thesis</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps3"><div class="d"></div>Write</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps4"><div class="d"></div>Fact Check</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps5"><div class="d"></div>Fix Pass</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps6"><div class="d"></div>Review</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══ PROMPT BUILDER ══ -->
+  <div class="sec-label">New Issue</div>
+  <div class="pb" id="pbCard">
+    <div class="pb-head">
+      <div class="pb-title">What's the <em>story</em> this week?</div>
+      <div class="pb-sub">Type your rough question. The pipeline scopes it, researches it, builds a thesis for your approval, writes it, fact-checks it, then hands it to you.</div>
+      <div class="rough-row">
+        <textarea class="ri" id="roughInput" rows="2" placeholder="e.g. What's going on with European markets vs US? How does it tie to the past year?"></textarea>
+        <button class="rbtn" id="refineBtn" onclick="doRefine()"><span>⟳</span> Refine</button>
+      </div>
+    </div>
+    <div class="scope-grid">
+      <div class="sf"><label>Market / Asset</label>
+        <select id="sf-market">
+          <option value="European equities (use STOXX Europe 600, Euro Stoxx 50, DAX, CAC 40, FTSE 100 — not EFA which is developed-markets ex-US including Japan)">European Equities</option>
+          <option value="US equities (S&P 500, Nasdaq 100, Russell 2000, specific sectors)">US Equities</option>
+          <option value="global rates and fixed income (Treasuries, Bunds, spreads, yield curves)">Rates & Bonds</option>
+          <option value="FX and currency markets (DXY, EUR/USD, JPY, EM FX)">FX / Currency</option>
+          <option value="commodities (oil WTI/Brent, gold, copper, agricultural)">Commodities</option>
+          <option value="emerging market equities (MSCI EM, country-level — use EEM, VWO or country ETFs)">Emerging Markets</option>
+          <option value="AI and technology sector equities (use QQQ, SMH, XLK, specific names)">AI / Tech Sector</option>
+          <option value="hedge funds and alternative strategies (use HFR indices, specific strategy buckets)">Hedge Funds / Alts</option>
+          <option value="private markets and venture capital">Private Markets / VC</option>
+          <option value="crypto and digital assets (BTC, ETH, on-chain data)">Crypto</option>
+        </select>
+      </div>
+      <div class="sf"><label>Recent Window</label>
+        <select id="sf-recent">
+          <option value="last 1-2 weeks">Last 1–2 Weeks</option>
+          <option value="last 2-4 weeks" selected>Last 2–4 Weeks</option>
+          <option value="last 1-3 months">Last 1–3 Months</option>
+          <option value="last 6 months">Last 6 Months</option>
+        </select>
+      </div>
+      <div class="sf"><label>Context Window</label>
+        <select id="sf-context">
+          <option value="3-month context">3-Month Context</option>
+          <option value="6-month context">6-Month Context</option>
+          <option value="12-month context" selected>12-Month Context</option>
+          <option value="3-year context">3-Year Context</option>
+        </select>
+      </div>
+      <div class="sf"><label>Reader Horizon</label>
+        <select id="sf-horizon">
+          <option value="tactical (1–4 weeks)">Tactical — 1–4 Weeks</option>
+          <option value="medium-term (1–3 months)" selected>Medium — 1–3 Months</option>
+          <option value="strategic (6–12 months)">Strategic — 6–12 Months</option>
+          <option value="long-term structural (1–3 years)">Long-Term Structural</option>
+        </select>
+      </div>
+      <div class="sf"><label>Reader Type</label>
+        <select id="sf-reader">
+          <option value="US-based sophisticated retail investor" selected>US Retail (Sophisticated)</option>
+          <option value="US-based institutional investor">US Institutional</option>
+          <option value="global macro investor">Global Macro</option>
+          <option value="long-only equity investor">Long-Only Equity</option>
+          <option value="RIA or wealth manager">RIA / Wealth Manager</option>
+        </select>
+      </div>
+      <div class="sf"><label>Contrarian Lean</label>
+        <select id="sf-lean">
+          <option value="balanced — present both sides fairly">Balanced</option>
+          <option value="mildly contrarian — gently challenge consensus" selected>Mildly Contrarian</option>
+          <option value="sharply contrarian — aggressively challenge consensus">Sharply Contrarian</option>
+        </select>
+      </div>
+    </div>
+    <div class="refined-block" id="refinedBlock">
+      <div class="rl"><span>Refined Research Query</span><span style="color:var(--muted);font-size:9px">Edit before running</span></div>
+      <textarea class="re" id="refinedEdit"></textarea>
+      <div class="rh">This exact query goes to the Research Agent. Edit to sharpen.</div>
+    </div>
+    <div class="pb-foot">
+      <div class="ctrl-row">
+        <div class="cg"><span class="cl">Depth</span>
+          <button class="chip" onclick="setC('depth','quick',this)">Quick</button>
+          <button class="chip on" onclick="setC('depth','standard',this)">Standard</button>
+          <button class="chip" onclick="setC('depth','deep',this)">Deep</button>
+        </div>
+        <div class="cg"><span class="cl">Length</span>
+          <button class="chip" onclick="setC('length','short',this)">Short</button>
+          <button class="chip on" onclick="setC('length','standard',this)">Standard</button>
+          <button class="chip" onclick="setC('length','long',this)">Long</button>
+        </div>
+      </div>
+      <button class="run-btn" id="runBtn" onclick="runPipeline()">Run Pipeline →</button>
+    </div>
+  </div>
+
+  <!-- ══ PIPELINE STAGES ══ -->
+  <div class="pipeline" id="pipeline">
+    <div class="sec-label">Pipeline</div>
+    <div class="err-bar" id="errBar"></div>
+    <div class="stage" id="s0"><div class="stage-hd"><span class="sn">00</span><span class="sname">Prompt Refiner</span><span class="sst" id="ss0">Waiting</span></div><div class="sbar"><div class="sprog" id="sp0"></div></div><div class="slog" id="sl0"></div></div>
+    <div class="stage" id="s1"><div class="stage-hd"><span class="sn">01</span><span class="sname">Research Agent</span><span class="sst" id="ss1">Waiting</span></div><div class="sbar"><div class="sprog" id="sp1"></div></div><div class="slog" id="sl1"></div></div>
+    <div class="stage" id="s2"><div class="stage-hd"><span class="sn">02</span><span class="sname">Thesis Agent</span><span class="sst" id="ss2">Waiting</span></div><div class="sbar"><div class="sprog" id="sp2"></div></div><div class="slog" id="sl2"></div></div>
+    <div class="stage" id="s3"><div class="stage-hd"><span class="sn">03</span><span class="sname">Writer Agent</span><span class="sst" id="ss3">Waiting</span></div><div class="sbar"><div class="sprog" id="sp3"></div></div><div class="slog" id="sl3"></div></div>
+    <div class="stage" id="s4"><div class="stage-hd"><span class="sn">04</span><span class="sname">Fact Check Agent</span><span class="sst" id="ss4">Waiting</span></div><div class="sbar"><div class="sprog" id="sp4"></div></div><div class="slog" id="sl4"></div></div>
+    <div class="stage" id="s5"><div class="stage-hd"><span class="sn">05</span><span class="sname">Fix Pass Agent</span><span class="sst" id="ss5">Waiting</span></div><div class="sbar"><div class="sprog" id="sp5"></div></div><div class="slog" id="sl5"></div></div>
+  </div>
+
+  <!-- ══ THESIS GATE ══ -->
+  <div class="thesis-gate" id="thesisGate">
+    <div class="sec-label">Thesis Review — Your Approval Required</div>
+    <div class="tg-card">
+      <div class="tg-head">
+        <span class="tg-title">⚑ Thesis Agent — Awaiting Your Decision</span>
+        <span class="tg-conf" id="tgConf"></span>
+      </div>
+      <div class="tg-body">
+        <div class="thesis-stmt" id="tgStmt"></div>
+        <div class="scenario-note" id="tgScenarioNote" style="display:none">⚠ Scenario math below is model-generated projection, not a sourced forecast. Label as estimate if used in draft.</div>
+        <div class="cases-grid">
+          <div class="case-box"><div class="case-lbl bull">Bull Case</div><div class="case-txt" id="tgBull"></div></div>
+          <div class="case-box"><div class="case-lbl base">Base Case</div><div class="case-txt" id="tgBase"></div></div>
+          <div class="case-box"><div class="case-lbl bear">Bear Case</div><div class="case-txt" id="tgBear"></div></div>
+        </div>
+        <div class="misp-box"><div class="misp-lbl">What Investors May Be Mispricing</div><div class="misp-txt" id="tgMisp"></div></div>
+        <div class="contra-box">
+          <div class="contra-q" id="tgContraQ"></div>
+          <div class="contra-a" id="tgContraA"></div>
+        </div>
+        <div class="rev-area">
+          <div class="rev-lbl">Revision Notes (optional — describe what to change, then re-run thesis)</div>
+          <textarea class="rev-input" id="revNotes" placeholder="e.g. Sharpen the bear case — it's too vague. Also push harder on the FX angle. The base case return estimate needs to be clearly labeled as scenario math…"></textarea>
+        </div>
+      </div>
+      <div class="tg-actions">
+        <button class="tg-btn approve" id="tgApproveBtn" onclick="approvethesis()">✓ Approve — Begin Writing</button>
+        <button class="tg-btn revise" id="tgReviseBtn" onclick="revisethesis()">↺ Revise &amp; Re-run Thesis</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FACT CHECK PANEL ══ -->
+  <div class="fc-panel" id="fcPanel">
+    <div class="sec-label">Fact Check Report</div>
+    <div class="fc-card">
+      <div class="fc-head">
+        <span class="fc-title">Fact Check Agent</span>
+        <span class="fc-summary" id="fcSummary"></span>
+      </div>
+      <div class="fc-body" id="fcBody"></div>
+      <div class="rv-actions" id="fcActions" style="display:none">
+        <button class="act approve" id="applyFixBtn" onclick="runFixPass()">Apply Fact Check Fixes</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);align-self:center;padding-left:4px">Fixes errors &amp; warnings without restarting pipeline</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ REVIEW ══ -->
+  <div class="review-sec" id="reviewSec">
+    <div class="sec-label">Your Review</div>
+    <div class="rv-card">
+      <div class="rv-head">
+        <span class="rv-title">Draft Issue</span>
+        <div class="badges">
+          <span class="badge bg" id="bdgW"></span>
+          <span class="badge bgr" id="bdgC"></span>
+          <span class="badge bb" id="bdgS"></span>
+          <span class="badge bw" id="bdgF"></span>
+        </div>
+      </div>
+      <div class="nl" id="nlRender"></div>
+      <div class="rv-actions">
+        <button class="act approve" onclick="doApprove()">✓ Approve</button>
+        <button class="act rewrite" onclick="doRewrite()">↺ Start Over</button>
+        <button class="act" onclick="cpHTML()">Copy HTML</button>
+        <button class="act" onclick="cpText()">Copy Text</button>
+      </div>
+    </div>
+    <div class="approved-bar" id="approvedBar"><span>✓</span><span>Approved — Distribution Agent (next) will push this to Beehiiv.</span></div>
+  </div>
+
+</div>
+
+<script>
+const cfg={depth:'standard',length:'standard'};
+let issueNum=Math.floor(Math.random()*40)+8;
+let running=false;
+let savedResearch=null, savedThesis=null, savedDraft=null, savedFc=null;
+let fcBeforeFixErr=0, fcBeforeFixWarn=0;
+
+function setC(k,v,el){cfg[k]=v;el.closest('.cg').querySelectorAll('.chip').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+
+function pss(id,state){document.getElementById('ps'+id).className='st '+state;}
+
+function stSet(i,state,txt){
+  const s=document.getElementById('s'+i),st=document.getElementById('ss'+i),sp=document.getElementById('sp'+i);
+  s.className='stage '+state;
+  if(txt)st.textContent=txt;
+  if(state==='active'){let w=0;s._iv=setInterval(()=>{w=Math.min(w+Math.random()*9,88);sp.style.width=w+'%';if(w>=88)clearInterval(s._iv);},350);}
+  if(state==='done'||state==='gate'||state==='err'){if(s._iv)clearInterval(s._iv);}
+}
+
+function log(i,txt,cls=''){const el=document.getElementById('sl'+i);const d=document.createElement('div');d.className='ll '+cls;d.textContent='› '+txt;el.appendChild(d);}
+
+function clearAll(){
+  for(let i=0;i<6;i++){
+    document.getElementById('sl'+i).innerHTML='';
+    document.getElementById('sp'+i).style.width='0%';
+    stSet(i,'','Waiting');
+  }
+  ['ps0','ps1','ps2','ps3','ps4','ps5','ps6'].forEach(id=>document.getElementById(id).className='st');
+}
+
+function scope(){
+  return{
+    market:document.getElementById('sf-market').value,
+    recent:document.getElementById('sf-recent').value,
+    context:document.getElementById('sf-context').value,
+    horizon:document.getElementById('sf-horizon').value,
+    reader:document.getElementById('sf-reader').value,
+    lean:document.getElementById('sf-lean').value,
+  };
+}
+
+// ── JSON repair ──
+function xJSON(txt){
+  const s=txt.indexOf('{'),e=txt.lastIndexOf('}');
+  if(s===-1||e===-1)throw new Error('No JSON in response');
+  let str=txt.slice(s,e+1);
+  // Pre-sanitise: replace smart quotes and common JSON-breaking patterns
+  str=str
+    .replace(/[\u2018\u2019]/g,"'")   // smart single quotes -> straight
+    .replace(/[\u201C\u201D]/g,'"')   // smart double quotes -> straight
+    .replace(/[\u2013\u2014]/g,'-');  // em/en dashes -> hyphen (safe in strings)
+  try{return JSON.parse(str);}
+  catch(e1){
+    try{
+      str=str.replace(/,\s*$/,'').replace(/,\s*\]/g,']').replace(/,\s*\}/g,'}');
+      const stack=[];let inStr=false,esc=false;
+      for(let i=0;i<str.length;i++){
+        const c=str[i];
+        if(esc){esc=false;continue;}
+        if(c==='\\'){esc=true;continue;}
+        if(c==='"'){inStr=!inStr;continue;}
+        if(inStr)continue;
+        if(c==='{')stack.push('}');
+        else if(c==='[')stack.push(']');
+        else if(c==='}'||c===']')stack.pop();
+      }
+      return JSON.parse(str+stack.reverse().join(''));
+    }catch(e2){throw new Error('JSON parse failed — try Quick depth. Detail: '+e1.message);}
+  }
+}
+
+async function callClaude(system,userMsg,opts={}){
+  const body={
+    model:'claude-sonnet-4-20250514',
+    max_tokens:opts.maxTokens||4000,
+    system,
+    messages:[{role:'user',content:userMsg}]
+  };
+  if(opts.search)body.tools=[{type:'web_search_20250305',name:'web_search'}];
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||res.status);}
+  const d=await res.json();
+  return d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+}
+
+// ── REFINE ──
+async function doRefine(){
+  const rough=document.getElementById('roughInput').value.trim();
+  const sc=scope();
+  const btn=document.getElementById('refineBtn');
+  btn.disabled=true;btn.innerHTML='<span>⟳</span> Refining…';
+  try{
+    const txt=await callClaude(
+      `You are a senior financial editor. Rewrite a vague investor question into a precise, scoped research query. Return ONLY the refined query as plain text — no labels, no JSON, no preamble. 2-4 sentences. Be specific: name the indices, instruments, timeframes, and investor decision at stake. Flag instrument precision — prefer VGK/EZU/FEZ over EFA for Europe; prefer specific index names over vague regional labels.`,
+      `Rough question: "${rough||'(none)'}"\nMarket: ${sc.market}\nRecent: ${sc.recent}\nContext: ${sc.context}\nHorizon: ${sc.horizon}\nReader: ${sc.reader}\nLean: ${sc.lean}`
+    );
+    document.getElementById('refinedEdit').value=txt.trim();
+    document.getElementById('refinedBlock').classList.add('on');
+  }catch(e){
+    document.getElementById('refinedEdit').value='Refinement failed. Type your query manually.';
+    document.getElementById('refinedBlock').classList.add('on');
+  }finally{btn.disabled=false;btn.innerHTML='<span>⟳</span> Re-refine';}
+}
+
+// ── MAIN PIPELINE ──
+async function runPipeline(){
+  if(running)return;
+  let q=document.getElementById('refinedEdit').value.trim();
+  if(!q){
+    const rough=document.getElementById('roughInput').value.trim();
+    if(!rough){alert('Enter a topic first.');return;}
+    q=rough;
+  }
+
+  running=true;
+  savedResearch=null;savedThesis=null;savedDraft=null;
+  document.getElementById('runBtn').disabled=true;
+  document.getElementById('runBtn').textContent='Running…';
+  document.getElementById('pipeline').classList.add('on');
+  document.getElementById('thesisGate').classList.remove('on');
+  document.getElementById('fcPanel').classList.remove('on');
+  document.getElementById('reviewSec').classList.remove('on');
+  document.getElementById('approvedBar').classList.remove('on');
+  document.getElementById('errBar').classList.remove('on');
+  clearAll();
+
+  const sc=scope();
+  const depthNote={quick:'Max 3 items per array, max 15 words per claim.',standard:'Max 4 items per array, max 20 words per claim.',deep:'Max 5 items per array, max 25 words per claim.'};
+
+  try{
+    // ── Stage 0: Scope ──
+    stSet(0,'active','Scoping…');pss(0,'active');
+    log(0,`Market: ${sc.market.split('(')[0].trim()}`);
+    log(0,`Windows: ${sc.recent} vs ${sc.context}`);
+    log(0,`Reader: ${sc.reader} | Horizon: ${sc.horizon}`);
+    log(0,`Query: "${q.substring(0,75)}…"`,'ok');
+    await delay(350);stSet(0,'done','Scoped');pss(0,'done');
+
+    // ── Stage 1: Research ──
+    stSet(1,'active','Searching…');pss(1,'active');
+    log(1,'Running live web search…');
+
+    const resRaw=await callClaude(
+      `You are a financial research agent. Return a structured cited briefing — NOT prose. Every claim needs a source, date, source quality classification, and confidence level. Be concise: ${depthNote[cfg.depth]}
+
+INSTRUMENT PRECISION: Always use specific indices/ETFs. For Europe: STOXX Europe 600, Euro Stoxx 50, DAX, CAC 40, FTSE 100, VGK, EZU, FEZ — never EFA. For US: S&P 500, Nasdaq 100, Russell 2000. Name the exact instrument for every claim.
+
+SOURCE QUALITY RULES — classify every source honestly:
+- primary_market_data: index provider, ETF issuer, exchange data, Bloomberg, Refinitiv, FactSet
+- company_filing_or_ir: SEC filing, earnings call, IR press release
+- official_institutional_report: IMF, Fed, ECB, World Bank, BIS, named sell-side research with date
+- reputable_financial_media: FT, WSJ, Bloomberg News, Reuters, Barron's, The Economist
+- syndicated_market_article: AP Finance, MarketWatch wire, 247WallSt, Benzinga, similar aggregators
+- blog_or_substack: individual author, newsletter, Substack, Medium
+- unknown: source cannot be classified
+
+SOURCE QUALITY CONSTRAINTS:
+- Market return claims (index %, ETF performance) require primary_market_data, company_filing_or_ir, or reputable_financial_media. Syndicated articles alone are insufficient.
+- Valuation claims (P/E, forward earnings multiples) require primary_market_data or company_filing_or_ir.
+- Institutional report claims require exact report title, publisher, and date.
+- Blog or Substack sources are medium or low confidence unless corroborated by a higher-quality source.
+- Syndicated market articles cannot be the sole support for major quantitative claims.
+- If only weak support exists, mark the claim low confidence.
+- supportsExactClaim must be true only if the claim is directly stated or directly calculable from the source. Do not mark true for claims that are merely consistent with the source.
+
+Return ONLY valid JSON, no fences:
+{
+  "topic":"...",
+  "oneSentenceSummary":"...",
+  "marketSnapshot":[{
+    "claim":"concise, max 20 words",
+    "instrument":"exact index or ETF",
+    "claimType":"market_return|valuation|company_financial|macro_data|forecast|scenario_math|editorial_interpretation",
+    "source":"publication name",
+    "sourceQuality":"primary_market_data|company_filing_or_ir|official_institutional_report|reputable_financial_media|syndicated_market_article|blog_or_substack|unknown",
+    "supportsExactClaim":true|false,
+    "quotedEvidence":"exact quote or data point, or null",
+    "date":"Mon YYYY",
+    "confidence":"high|medium|low"
+  }],
+  "priorTrend":[{"claim":"...","instrument":"...","claimType":"...","source":"...","sourceQuality":"...","supportsExactClaim":true|false,"quotedEvidence":"...","date":"Mon YYYY","confidence":"high|medium|low"}],
+  "whatChanged":[{"claim":"...","claimType":"...","source":"...","sourceQuality":"...","supportsExactClaim":true|false,"quotedEvidence":"...","date":"Mon YYYY","confidence":"high|medium|low"}],
+  "evidenceFor":[{"point":"...","claimType":"...","source":"...","sourceQuality":"...","supportsExactClaim":true|false,"quotedEvidence":"...","date":"Mon YYYY","confidence":"high|medium|low"}],
+  "evidenceAgainst":[{"point":"...","claimType":"...","source":"...","sourceQuality":"...","supportsExactClaim":true|false,"quotedEvidence":"...","date":"Mon YYYY","confidence":"high|medium|low"}],
+  "possibleMispricing":"one sentence",
+  "sourceList":[{
+    "publication":"...",
+    "url":"url if known or null",
+    "sourceQuality":"primary_market_data|company_filing_or_ir|official_institutional_report|reputable_financial_media|syndicated_market_article|blog_or_substack|unknown",
+    "date":"Mon YYYY",
+    "supports":"which claim",
+    "supportsExactClaim":true|false,
+    "quotedEvidence":"exact short quote or data point if available, or null"
+  }],
+  "recommendedAngle":"one sentence — sharpest contrarian angle"
+}`,
+      `Research: ${q}\nMarket: ${sc.market}\nRecent: ${sc.recent}\nContext: ${sc.context}\nReader: ${sc.reader}\nDepth: ${depthNote[cfg.depth]}\nFlag uncertainty. Do not fabricate URLs — use null if unknown.`,
+      {search:true,maxTokens:5000}
+    );
+
+    const research=xJSON(resRaw);
+    savedResearch=research;
+    const claimCount=(research.marketSnapshot?.length||0)+(research.evidenceFor?.length||0)+(research.evidenceAgainst?.length||0);
+    const srcCount=research.sourceList?.length||0;
+    log(1,`${claimCount} claims across snapshot + evidence`,'ok');
+    log(1,`${srcCount} sources cited`,(srcCount>2?'ok':'warn'));
+    log(1,`Angle: "${(research.recommendedAngle||'').substring(0,55)}…"`,'info');
+    stSet(1,'done',`${claimCount} claims, ${srcCount} sources`);pss(1,'done');
+    await delay(350);
+
+    // ── Stage 2: Thesis ──
+    stSet(2,'active','Building…');pss(2,'active');
+    log(2,'Evaluating cases…');
+    await runThesisAgent(research,sc);
+
+  }catch(err){
+    showErr(err.message);
+  }
+}
+
+async function runThesisAgent(research,sc,revisionNotes=''){
+  try{
+    const tRaw=await callClaude(
+      `You are a senior investment editor and thesis agent. Receive a structured research briefing and decide the central argument. Do NOT write prose. Decide what the article should argue.
+
+IMPORTANT: Any numerical projections (return estimates, percentage targets, timeline estimates) you generate are SCENARIO MATH — model-generated, not sourced forecasts. Label them clearly as such.
+
+Return ONLY valid JSON, no fences:
+{
+  "centralThesis":"one crisp sentence — the argument",
+  "thesisBasis":"why this thesis — what drives it from the research",
+  "bullCase":"best case and what drives it",
+  "baseCase":"most probable scenario",
+  "bearCase":"what could go wrong",
+  "scenarioMath":{"included":true|false,"projections":["list any return/% estimates you include — these are scenario math, not forecasts"]},
+  "whatMispricing":"specific thing investors are getting wrong",
+  "contrarianTest":"hardest skeptic question",
+  "contrarianAnswer":"honest answer",
+  "newsletterAngle":"exact angle and framing for the article",
+  "confidence":"high|medium|low",
+  "confidenceRationale":"why"
+}`,
+      `Research: ${JSON.stringify(research,null,1)}\nLean: ${sc.lean}\nHorizon: ${sc.horizon}\nReader: ${sc.reader}${revisionNotes?'\n\nRevision notes from editor: '+revisionNotes:''}`,
+      {maxTokens:2000}
+    );
+
+    const thesis=xJSON(tRaw);
+    savedThesis=thesis;
+
+    log(2,`Thesis: "${(thesis.centralThesis||'').substring(0,65)}…"`,'ok');
+    log(2,`Confidence: ${thesis.confidence}`,thesis.confidence==='high'?'ok':thesis.confidence==='medium'?'warn':'err');
+    if(thesis.scenarioMath?.included)log(2,'⚠ Contains scenario math — will be labeled in draft','warn');
+    stSet(2,'gate','⚑ Awaiting your approval');pss(2,'gate');
+
+    renderThesisGate(thesis);
+    document.getElementById('thesisGate').classList.add('on');
+    document.getElementById('thesisGate').scrollIntoView({behavior:'smooth',block:'start'});
+
+  }catch(err){
+    showErr('Thesis: '+err.message);
+    stSet(2,'err','Failed');log(2,err.message,'err');
+  }
+}
+
+function renderThesisGate(t){
+  document.getElementById('tgStmt').textContent=t.centralThesis||'';
+  document.getElementById('tgBull').textContent=t.bullCase||'';
+  document.getElementById('tgBase').textContent=t.baseCase||'';
+  document.getElementById('tgBear').textContent=t.bearCase||'';
+  document.getElementById('tgMisp').textContent=t.whatMispricing||'';
+  document.getElementById('tgContraQ').textContent='Contrarian test: '+( t.contrarianTest||'');
+  document.getElementById('tgContraA').textContent=t.contrarianAnswer||'';
+  document.getElementById('tgConf').textContent=`Confidence: ${t.confidence||'?'} — ${t.confidenceRationale||''}`;
+  const snNote=document.getElementById('tgScenarioNote');
+  snNote.style.display=t.scenarioMath?.included?'block':'none';
+  document.getElementById('tgApproveBtn').disabled=false;
+  document.getElementById('tgReviseBtn').disabled=false;
+  document.getElementById('revNotes').value='';
+}
+
+async function approvethesis(){
+  document.getElementById('tgApproveBtn').disabled=true;
+  document.getElementById('tgReviseBtn').disabled=true;
+  pss(2,'done');stSet(2,'done','Approved');
+  document.getElementById('thesisGate').classList.remove('on');
+  await continueToWrite();
+}
+
+async function revisethesis(){
+  const notes=document.getElementById('revNotes').value.trim();
+  document.getElementById('tgApproveBtn').disabled=true;
+  document.getElementById('tgReviseBtn').disabled=true;
+  document.getElementById('thesisGate').classList.remove('on');
+  stSet(2,'active','Revising…');pss(2,'active');
+  log(2,'Revision requested: '+notes.substring(0,60)+'…','warn');
+  const sc=scope();
+  await runThesisAgent(savedResearch,sc,notes);
+}
+
+async function continueToWrite(){
+  const sc=scope();
+  const thesis=savedThesis;
+  const research=savedResearch;
+
+  try{
+    // ── Stage 3: Write ──
+    stSet(3,'active','Writing…');pss(3,'active');
+    log(3,'Angle: '+(thesis.newsletterAngle||'').substring(0,60)+'…');
+    log(3,'Writing lede…');
+
+    const lenMap={short:'400–600 words.',standard:'750–1000 words.',long:'1200–1600 words.'};
+
+    const dRaw=await callClaude(
+      `You are the writer for "The Augmented Investor." Sharp, contrarian, never boring. Write for sophisticated investors.
+
+RULES:
+- Lead with what everyone's missing.
+- Cite sources inline as (Publication, Mon YYYY).
+- Any return/percentage projections from the thesis must be labeled with [scenario estimate] in the text.
+- Use precise instrument names: STOXX Europe 600, DAX, VGK, EZU — never vague regional shorthand or EFA for Europe.
+- Never give direct investment advice. Frame as analysis, not recommendation.
+- End with a clear investable question, not a recommendation.
+
+JSON SAFETY RULES — critical:
+- The "body" field contains HTML. Do NOT use double-quote characters (") inside HTML attribute values — use single quotes for all HTML attributes e.g. <span style='color:red'> not <span style="color:red">.
+- Do NOT use unescaped newline characters inside any JSON string value. Use a space instead of a line break within a JSON string.
+- Do NOT use smart/curly quotes. Use only straight apostrophes and straight double quotes at JSON boundaries.
+- Keep each JSON field on one line — do not break string values across multiple lines.
+
+Return ONLY valid JSON, no fences, no preamble, no trailing comma:
+{
+  "issue_number":"${issueNum}",
+  "date":"May 2026",
+  "subject_line":"punchy subject line under 58 chars",
+  "title":"sharp headline under 9 words",
+  "subtitle":"one italic subhead",
+  "lede":"2-3 sentence hook — most important",
+  "body":"full HTML body — use <p><h2><h3><strong><em>. At least one <blockquote><p>pullquote</p></blockquote>. Label projections [scenario estimate]. Cite sources inline.",
+  "sources_used":["publication names used"],
+  "word_count":number,
+  "contrarian_score":"1-10"
+}`,
+      `THESIS:\n- Central: ${thesis.centralThesis}\n- Angle: ${thesis.newsletterAngle}\n- Bull: ${thesis.bullCase}\n- Base: ${thesis.baseCase}\n- Bear: ${thesis.bearCase}\n- Mispricing: ${thesis.whatMispricing}\n- Contrarian Q: ${thesis.contrarianTest}\n- Answer: ${thesis.contrarianAnswer}\n\nKEY FACTS:\n${(research.marketSnapshot||[]).slice(0,4).map(c=>`- ${c.claim} [${c.instrument||''}] (${c.source}, ${c.date})`).join('\n')}\n${(research.evidenceFor||[]).slice(0,3).map(c=>`- FOR: ${c.point} (${c.source})`).join('\n')}\n${(research.evidenceAgainst||[]).slice(0,3).map(c=>`- AGAINST: ${c.point} (${c.source})`).join('\n')}\nMispricing: ${research.possibleMispricing}\n\nLength: ${lenMap[cfg.length]}\nLean: ${sc.lean}`,
+      {maxTokens:6000}
+    );
+
+    const draft=xJSON(dRaw);
+    savedDraft=draft;
+
+    log(3,`~${draft.word_count||'?'} words, contrarian ${draft.contrarian_score}/10`,'ok');
+    log(3,'Sending to fact check…','ok');
+    stSet(3,'done',`~${draft.word_count||'?'} words`);pss(3,'done');
+    await delay(300);
+
+    // ── Stage 4: Fact Check ──
+    stSet(4,'active','Checking…');pss(4,'active');
+    const bodyLen=(draft.body||'').replace(/<[^>]+>/g,' ').length;
+    log(4,'Comparing draft against research JSON…');
+    log(4,`Full draft: ~${Math.round(bodyLen/5)} words, ${bodyLen} chars — full coverage`,'info');
+    log(4,'Scanning all claims: numbers, sources, instruments, advice language…');
+
+    const fcRaw=await callClaude(
+      `You are a fact-checking and source verification agent for a financial newsletter. You do two jobs in one pass: (1) check whether claims are supported by the research JSON, and (2) verify whether cited sources actually support the exact claim at appropriate quality for that claim type.
+
+URL RULE: Plain-text footnote URLs count as valid source citations. Do NOT flag missing_url if a URL appears anywhere in the draft as a footnote reference, even as plain text. Only flag missing_url if no URL or source name exists anywhere for the claim.
+
+UNIT CONVERSION RULE: If a claim is a valid mathematical restatement or unit conversion of a cited figure — e.g. "three to four years" restating "36-48 months", "roughly 60%" restating "58-62%", "over $8 billion" restating "$8.4 billion" — classify it as ok. Only flag unsupported_number when the value has no traceable basis in the research JSON at all.
+
+SOURCE QUALITY DEFINITIONS:
+- primary_market_data: index provider, ETF issuer, exchange, Bloomberg, Refinitiv, FactSet
+- company_filing_or_ir: SEC filing, earnings call, IR press release
+- official_institutional_report: IMF, Fed, ECB, World Bank, BIS, named sell-side research
+- reputable_financial_media: FT, WSJ, Bloomberg News, Reuters, Barrons, The Economist
+- syndicated_market_article: MarketWatch wire, 247WallSt, Benzinga, AP Finance, similar aggregators
+- blog_or_substack: individual author, newsletter, Substack, Medium
+- unknown: cannot be classified
+
+SOURCE QUALITY RULES BY CLAIM TYPE:
+- market_return (index %, ETF performance): requires primary_market_data, company_filing_or_ir, or reputable_financial_media. Syndicated article alone = weak_source_for_quant_claim (error).
+- valuation (P/E, forward multiples): requires primary_market_data or company_filing_or_ir. Syndicated = weak_source_for_quant_claim (error).
+- company_financial (revenue, earnings): requires company_filing_or_ir or reputable_financial_media.
+- institutional_report: must cite exact title, publisher, date — missing any = exact_quote_missing (warning).
+- forecast and scenario_math: must be labeled in the draft — unlabeled = scenario_math_unlabeled (warning).
+- editorial_interpretation: any source acceptable, must be framed as opinion.
+- blog_or_substack alone for any quantitative claim = overrelies_on_blog_or_substack (warning).
+
+Return ONLY valid JSON, no fences:
+{
+  "flags":[
+    {
+      "category":"unsupported_number|missing_url|instrument_imprecision|overconfident_projection|missing_counterargument|investment_advice|scenario_math_unlabeled|weak_source_for_quant_claim|source_does_not_support_claim|source_quality_mismatch|unverified_market_return|overrelies_on_blog_or_substack|exact_quote_missing|citation_present_but_claim_unproven|ok",
+      "severity":"error|warning|info|ok",
+      "excerpt":"exact quote from draft (max 20 words)",
+      "issue":"what is wrong or flagged",
+      "suggestion":"how to fix, soften, generalize, or label it",
+      "claimType":"market_return|valuation|company_financial|institutional_report|macro_data|forecast|scenario_math|editorial_interpretation",
+      "requiredSourceQuality":"primary_market_data|company_filing_or_ir|official_institutional_report|reputable_financial_media|syndicated_market_article|any",
+      "actualSourceQuality":"primary_market_data|company_filing_or_ir|official_institutional_report|reputable_financial_media|syndicated_market_article|blog_or_substack|unknown|none",
+      "verificationStatus":"verified|partially_supported|unsupported|needs_primary_source",
+      "triage":"fixableWithExistingResearch|generalizeOrRemoveUnsupportedSpecificity|needsResearchAddendum",
+      "addendumQuery":"if triage is needsResearchAddendum: one-sentence targeted search query, else null"
+    }
+  ],
+  "sourceQualitySummary":{
+    "weakSourceFlags":0,
+    "unverifiedQuantClaims":0,
+    "blogOnlyClaims":0,
+    "overallSourceQuality":"strong|acceptable|weak|unreliable"
+  },
+  "overallScore":"clean|minor_issues|needs_work",
+  "summary":"one sentence summary"
+}
+
+THREE-BUCKET TRIAGE:
+1. fixableWithExistingResearch: surgical fix using existing research. Add qualifier, date, attribution, label scenario math, soften overconfident phrasing, fix instrument name, add counterargument from evidenceAgainst.
+2. generalizeOrRemoveUnsupportedSpecificity: named entity or specific figure not in research JSON but point survives generalization. Fix Agent broadens or removes without new research.
+3. needsResearchAddendum: specific, essential, non-generalizable claim with no research JSON support.
+
+SEVERITY CALIBRATION:
+- error: Reader would be materially misled. Named entities without source, market return from syndicated-only source, valuation figure from blog, direct investment advice.
+- warning: Weakens credibility but does not mislead. Weak source for qualitative claim, minor attribution gap, blog-sourced quantitative claim, unlabeled scenario math.
+- info: Valid restatement, unit conversion of cited figure, defensible generalization, stylistic observation.
+- ok: Fully supported by research JSON at appropriate source quality for the claim type.`,
+      `RESEARCH BRIEFING:\n${JSON.stringify({
+        marketSnapshot:savedResearch.marketSnapshot,
+        evidenceFor:savedResearch.evidenceFor,
+        evidenceAgainst:savedResearch.evidenceAgainst,
+        sourceList:savedResearch.sourceList
+      },null,1)}\n\nDRAFT ARTICLE (full):\nTitle: ${draft.title}\nLede: ${draft.lede}\nBody: ${(draft.body||'').replace(/<[^>]+>/g,' ')}`,
+      {maxTokens:3000}
+    );
+
+    const fc=xJSON(fcRaw);
+    savedFc=fc;
+    renderFactCheck(fc,draft);
+
+    const errCount=(fc.flags||[]).filter(f=>f.severity==='error').length;
+    const warnCount=(fc.flags||[]).filter(f=>f.severity==='warning').length;
+    const fcScore=fc.overallScore||(errCount?'needs_work':warnCount?'minor_issues':'clean');
+    log(4,`${errCount} errors, ${warnCount} warnings — ${fcScore}`,(errCount===0?'ok':'warn'));
+    stSet(4,'done',fcScore);pss(4,'done');
+    pss(6,'active');
+
+    renderDraft(draft,savedResearch,fc);
+    await delay(300);
+    pss(6,'done');
+
+    document.getElementById('reviewSec').classList.add('on');
+    document.getElementById('reviewSec').scrollIntoView({behavior:'smooth',block:'start'});
+
+  }catch(err){
+    showErr(err.message);
+    for(let i=3;i<5;i++){if(document.getElementById('s'+i).classList.contains('active')){stSet(i,'err','Failed');log(i,err.message,'err');}}
+  }finally{
+    running=false;
+    document.getElementById('runBtn').disabled=false;
+    document.getElementById('runBtn').textContent='Run Pipeline →';
+  }
+}
+
+function renderFactCheck(fc,draft){
+  const panel=document.getElementById('fcPanel');
+  const body=document.getElementById('fcBody');
+  const summary=document.getElementById('fcSummary');
+
+  const allFlags=fc.flags||[];
+  const errC=allFlags.filter(f=>f.severity==='error').length;
+  const warnC=allFlags.filter(f=>f.severity==='warning').length;
+  const okC=allFlags.filter(f=>f.severity==='ok').length;
+  const infoC=allFlags.filter(f=>f.severity==='info').length;
+
+  // Three triage buckets
+  const surgicalFlags=allFlags.filter(f=>f.severity!=='ok'&&f.severity!=='info'&&(!f.triage||f.triage==='fixableWithExistingResearch'));
+  const generalizeFlags=allFlags.filter(f=>f.severity!=='ok'&&f.severity!=='info'&&f.triage==='generalizeOrRemoveUnsupportedSpecificity');
+  const addendumFlags=allFlags.filter(f=>f.severity!=='ok'&&f.severity!=='info'&&f.triage==='needsResearchAddendum');
+  const infoFlags=allFlags.filter(f=>f.severity==='info');
+  const cleanFlags=allFlags.filter(f=>f.severity==='ok');
+
+  // Source quality flags (new categories)
+  const sourceQualityCategories=['weak_source_for_quant_claim','source_does_not_support_claim','source_quality_mismatch','unverified_market_return','overrelies_on_blog_or_substack','exact_quote_missing','citation_present_but_claim_unproven'];
+  const srcQualFlags=allFlags.filter(f=>sourceQualityCategories.includes(f.category)&&f.severity!=='ok');
+
+  const sq=fc.sourceQualitySummary||{};
+
+  summary.innerHTML=`${errC} errors · ${warnC} warnings · ${infoC} info · ${okC} clear`
+    +(sq.overallSourceQuality?` · Source quality: <span style="color:${sq.overallSourceQuality==='strong'?'var(--green2)':sq.overallSourceQuality==='acceptable'?'var(--blue2)':sq.overallSourceQuality==='weak'?'var(--amber2)':'var(--red2)'}">${sq.overallSourceQuality}</span>`:'');
+  summary.style.color=errC>0?'var(--red2)':warnC>0?'var(--amber2)':'var(--green2)';
+
+  const sevClass={error:'f-err',warning:'f-warn',info:'f-info',ok:'f-ok'};
+  const catLabel={
+    unsupported_number:'Unsupported Number',
+    missing_url:'No Source URL',
+    instrument_imprecision:'Instrument Imprecision',
+    overconfident_projection:'Overconfident Projection',
+    missing_counterargument:'Missing Counter',
+    investment_advice:'Investment Advice',
+    scenario_math_unlabeled:'Unlabeled Scenario Math',
+    weak_source_for_quant_claim:'Weak Source',
+    source_does_not_support_claim:'Source Mismatch',
+    source_quality_mismatch:'Quality Mismatch',
+    unverified_market_return:'Unverified Return',
+    overrelies_on_blog_or_substack:'Blog/Substack Only',
+    exact_quote_missing:'No Quoted Evidence',
+    citation_present_but_claim_unproven:'Claim Unproven',
+    ok:'Clear'
+  };
+
+  const srcQualLabel={
+    primary_market_data:'Primary Data',
+    company_filing_or_ir:'Filing/IR',
+    official_institutional_report:'Institutional',
+    reputable_financial_media:'Reputable Media',
+    syndicated_market_article:'Syndicated',
+    blog_or_substack:'Blog/Substack',
+    unknown:'Unknown',
+    none:'None'
+  };
+
+  const vsColor={verified:'var(--green2)',partially_supported:'var(--amber2)',unsupported:'var(--red2)',needs_primary_source:'var(--blue2)'};
+
+  function flagHTML(f,extraStyle=''){
+    const sqMeta=f.actualSourceQuality||f.requiredSourceQuality?`
+      <div style='margin-top:5px;display:flex;gap:8px;flex-wrap:wrap;'>
+        ${f.claimType?`<span style='font-family:JetBrains Mono,monospace;font-size:9px;color:var(--muted2);border:1px solid var(--border);padding:1px 6px;border-radius:2px'>${f.claimType}</span>`:''}
+        ${f.requiredSourceQuality?`<span style='font-family:JetBrains Mono,monospace;font-size:9px;color:var(--muted2)'>needs: ${srcQualLabel[f.requiredSourceQuality]||f.requiredSourceQuality}</span>`:''}
+        ${f.actualSourceQuality?`<span style='font-family:JetBrains Mono,monospace;font-size:9px;color:${f.actualSourceQuality==='primary_market_data'||f.actualSourceQuality==='company_filing_or_ir'?'var(--green2)':f.actualSourceQuality==='reputable_financial_media'?'var(--blue2)':f.actualSourceQuality==='syndicated_market_article'?'var(--amber2)':'var(--red2)'}>actual: ${srcQualLabel[f.actualSourceQuality]||f.actualSourceQuality}</span>`:''}
+        ${f.verificationStatus?`<span style='font-family:JetBrains Mono,monospace;font-size:9px;color:${vsColor[f.verificationStatus]||'var(--muted2)'}'>${f.verificationStatus}</span>`:''}
+      </div>`:'' ;
+    return `<div class='fc-flag ${sevClass[f.severity]||'f-info'}' style='${extraStyle}'>
+      <div class='fc-flag-type'>${catLabel[f.category]||f.category}</div>
+      <div class='fc-flag-txt'>
+        ${f.excerpt?`<strong>"${esc(f.excerpt)}"</strong> — `:''}${esc(f.issue)}
+        ${f.suggestion?`<br><span style='opacity:.7'>Fix: ${esc(f.suggestion)}</span>`:''}
+        ${sqMeta}
+      </div>
+    </div>`;
+  }
+
+  let out='';
+
+  if(allFlags.length===0){
+    out='<div class="fc-clean">No issues found — draft is clean.</div>';
+  } else {
+
+    // Source quality section (new)
+    if(srcQualFlags.length>0){
+      out+=`<div class='fc-section-label fc-section-srcq'>Source quality issues <span class='fc-count fc-count-amber'>${srcQualFlags.length}</span></div>`;
+      if(sq.weakSourceFlags||sq.unverifiedQuantClaims||sq.blogOnlyClaims){
+        out+=`<div style='font-family:JetBrains Mono,monospace;font-size:9px;color:var(--muted2);padding:4px 0 8px;display:flex;gap:14px;flex-wrap:wrap'>
+          ${sq.weakSourceFlags?`<span>${sq.weakSourceFlags} weak-source flags</span>`:''}
+          ${sq.unverifiedQuantClaims?`<span>${sq.unverifiedQuantClaims} unverified quant claims</span>`:''}
+          ${sq.blogOnlyClaims?`<span>${sq.blogOnlyClaims} blog-only claims</span>`:''}
+        </div>`;
+      }
+      out+=srcQualFlags.map(f=>flagHTML(f,'border-left-color:var(--blue2);background:rgba(88,152,232,0.07)')).join('');
+    }
+
+    // Surgical fixes
+    const nonSrcSurgical=surgicalFlags.filter(f=>!sourceQualityCategories.includes(f.category));
+    if(nonSrcSurgical.length>0){
+      out+=`<div class='fc-section-label'>Fixable with existing research <span class='fc-count'>${nonSrcSurgical.length}</span></div>`;
+      out+=nonSrcSurgical.map(f=>flagHTML(f)).join('');
+    }
+
+    // Generalize
+    if(generalizeFlags.length>0){
+      out+=`<div class='fc-section-label fc-section-generalize'>Generalize or remove — no new research needed <span class='fc-count fc-count-amber'>${generalizeFlags.length}</span></div>`;
+      out+=generalizeFlags.map(f=>`<div class='fc-flag f-warn' style='border-left-color:var(--amber2);background:var(--adim)'>
+        <div class='fc-flag-type' style='color:var(--amber2)'>Generalize</div>
+        <div class='fc-flag-txt'>
+          ${f.excerpt?`<strong>"${esc(f.excerpt)}"</strong> — `:''}${esc(f.issue)}
+          ${f.suggestion?`<br><span style='opacity:.7'>Fix: ${esc(f.suggestion)}</span>`:''}
+        </div>
+      </div>`).join('');
+    }
+
+    // Addendum
+    if(addendumFlags.length>0){
+      out+=`<div class='fc-section-label fc-section-addendum'>Needs research addendum — not auto-fixed <span class='fc-count fc-count-amber'>${addendumFlags.length}</span></div>`;
+      out+=addendumFlags.map(f=>`<div class='fc-flag f-warn' style='border-left-color:var(--purple2,#a878f0);background:rgba(168,120,240,0.07)'>
+        <div class='fc-flag-type' style='color:var(--purple2,#a878f0)'>Needs Addendum</div>
+        <div class='fc-flag-txt'>
+          ${f.excerpt?`<strong>"${esc(f.excerpt)}"</strong> — `:''}${esc(f.issue)}
+          ${f.suggestion?`<br><span style='opacity:.7'>Fix: ${esc(f.suggestion)}</span>`:''}
+          ${f.addendumQuery?`<br><span style='font-family:JetBrains Mono,monospace;font-size:9px;color:var(--muted2)'>Search: "${esc(f.addendumQuery)}"</span>`:''}
+        </div>
+      </div>`).join('');
+    }
+
+    // Info
+    if(infoFlags.length>0){
+      out+=`<div class='fc-section-label' style='color:var(--blue2)'>Info only — no action needed <span class='fc-count' style='background:var(--bdim);color:var(--blue2);border-color:rgba(88,152,232,.2)'>${infoFlags.length}</span></div>`;
+      out+=infoFlags.map(f=>flagHTML(f)).join('');
+    }
+
+    // Clean
+    if(cleanFlags.length>0){
+      out+=`<div class='fc-section-label fc-section-ok'>Clear <span class='fc-count fc-count-green'>${cleanFlags.length}</span></div>`;
+      out+=cleanFlags.map(f=>flagHTML(f)).join('');
+    }
+  }
+
+  body.innerHTML=out;
+  panel.classList.add('on');
+
+  // Show Apply button if there are fixable or generalizable flags
+  const fcAct=document.getElementById('fcActions');
+  const fixable=surgicalFlags.length+generalizeFlags.length+srcQualFlags.length;
+  if(fcAct) fcAct.style.display=fixable>0?'flex':'none';
+}
+
+
+function renderDraft(d,research,fc){
+  const errC=(fc?.flags||[]).filter(f=>f.severity==='error').length;
+  const warnC=(fc?.flags||[]).filter(f=>f.severity==='warning').length;
+
+  const body=(d.body||'')
+    .replace(/<blockquote>/g,'<div class="nl-pq">')
+    .replace(/<\/blockquote>/g,'</div>');
+
+  // Build source list with claim-level detail
+  const sources=(research.sourceList||[]);
+  const srcHTML=sources.length?`
+    <div class="nl-sources">
+      <div class="nl-src-label">Sources</div>
+      ${sources.map(s=>`
+        <div class="nl-src-item">
+          <strong>${esc(s.publication||'')}</strong>${s.date?' · '+esc(s.date):''}
+          ${s.url?` · <a href="${esc(s.url)}" target="_blank">${esc(s.url.length>50?s.url.substring(0,50)+'…':s.url)}</a>`:'<span style="color:var(--amber2);font-size:9px"> · URL not available</span>'}
+          ${s.supports?' · supports: '+esc(s.supports):''}
+          ${s.quotedEvidence?`<div class="nl-src-quote">"${esc(s.quotedEvidence)}"</div>`:''}
+        </div>`).join('')}
+    </div>`:'';
+
+  document.getElementById('nlRender').innerHTML=`
+    <div class="nl-meta">Issue ${d.issue_number} · ${d.date}</div>
+    <div class="nl-title">${esc(d.title)}</div>
+    <div class="nl-sub">${esc(d.subtitle)}</div>
+    <hr class="nl-rule">
+    <div class="nl-lede">${esc(d.lede)}</div>
+    <hr class="nl-rule-sm">
+    <div class="nl-body">${body}</div>
+    ${srcHTML}
+    <div class="nl-footer"><span>The Augmented Investor</span><span>Subject: ${esc(d.subject_line||'')}</span></div>
+  `;
+
+  document.getElementById('bdgW').textContent=d._wordCountApprox?`~${d.word_count||'?'} words (post-fix)`:` ~${d.word_count||'?'} words`;
+  document.getElementById('bdgC').textContent=`Contrarian: ${d.contrarian_score}/10`;
+  document.getElementById('bdgS').textContent=d.subject_line||'';
+  const fcBadge=document.getElementById('bdgF');
+  const didFix=(fcBeforeFixErr>0||fcBeforeFixWarn>0)&&(fcBeforeFixErr!==errC||fcBeforeFixWarn!==warnC);
+  if(didFix){
+    fcBadge.textContent=`FC: ${fcBeforeFixErr}e/${fcBeforeFixWarn}w → ${errC}e/${warnC}w`;
+  } else {
+    fcBadge.textContent=errC>0?`${errC} FC errors`:warnC>0?`${warnC} FC warnings`:'FC clean';
+  }
+  fcBadge.className='badge '+(errC>0?'bw':warnC>0?'bw':'bgr');
+}
+
+function showErr(msg){
+  const eb=document.getElementById('errBar');eb.textContent='⚠ '+msg;eb.classList.add('on');
+  running=false;
+  document.getElementById('runBtn').disabled=false;
+  document.getElementById('runBtn').textContent='Run Pipeline →';
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+
+async function runFixPass(){
+  if(!savedDraft||!savedResearch||!savedFc){alert('No draft to fix.');return;}
+  const btn=document.getElementById('applyFixBtn');
+  btn.disabled=true;btn.textContent='Running Fix Pass…';
+  pss(5,'active');stSet(5,'active','Fixing…');
+  document.getElementById('pipeline').classList.add('on');
+  log(5,'Applying fact check fixes to draft…');
+
+  // Only fix surgical flags — skip needsResearchAddendum
+  const allIssueFlags=(savedFc.flags||[]).filter(f=>f.severity==='error'||f.severity==='warning');
+  const srcQualCats=['weak_source_for_quant_claim','source_does_not_support_claim','source_quality_mismatch','unverified_market_return','overrelies_on_blog_or_substack','exact_quote_missing','citation_present_but_claim_unproven'];
+  // Pass to Fix Agent:
+  //   (a) all non-addendum flags (surgical + generalize)
+  //   (b) source-quality flags even if triage=needsResearchAddendum — Fix Agent softens/removes these, does NOT research them
+  // Do NOT pass non-source-quality needsResearchAddendum flags — those need new evidence
+  const errorFlags=allIssueFlags.filter(f=>
+    f.triage!=='needsResearchAddendum' ||
+    srcQualCats.includes(f.category)  // soften/remove weak-source claims, never invent new sources
+  );
+  const addendumFlags=allIssueFlags.filter(f=>f.triage==='needsResearchAddendum');
+  const preFixErrCount=(savedFc.flags||[]).filter(f=>f.severity==='error').length;
+  const preFixWarnCount=(savedFc.flags||[]).filter(f=>f.severity==='warning').length;
+  fcBeforeFixErr=preFixErrCount; fcBeforeFixWarn=preFixWarnCount;
+  log(5,`${errorFlags.length} surgical fixes to apply`,'warn');
+  if(addendumFlags.length>0)log(5,`${addendumFlags.length} addendum flags skipped (no evidence in research JSON)`,'info');
+
+  try{
+    const fixRaw=await callClaude(
+      `You are a copy editor for a financial newsletter. Fix ONLY flagged issues — preserve voice, structure, and all unflagged sections.
+
+THREE FLAG TYPES — handle each as follows:
+
+fixableWithExistingResearch — minimum surgical change:
+- Add missing date qualifiers (e.g. "as of April 2026")
+- Add missing source citations inline (e.g. "(Reuters, Apr 2026)")
+- Format plain-text URLs as HTML links using single-quoted attributes
+- Label unlabeled projections as [scenario estimate]
+- Add one brief counterargument sentence using evidenceAgainst data
+- Rephrase investment advice: "this may represent..." not "investors should buy..."
+- Correct imprecise instrument names using the research JSON
+
+SOURCE QUALITY FIXES — for weak_source_for_quant_claim, source_does_not_support_claim, unverified_market_return, overrelies_on_blog_or_substack, source_quality_mismatch:
+- Market return or valuation figure backed only by syndicated article or blog: SOFTEN the claim. Change "surged 12%" to "gained significantly" or add "according to market reports, approximately..."
+- If softening loses the meaning: add "(unverified — primary data pending)" qualifier
+- Do NOT merely re-add the weak citation — that does not fix the source quality problem
+- Do NOT invent a better source or URL
+- Institutional report claims missing title/date/publisher: add whatever is available from research JSON sourceList
+- Blog/Substack-only quantitative claim: generalize or add "(unverified estimate)" label
+
+generalizeOrRemoveUnsupportedSpecificity — default to generalizing aggressively:
+- ALWAYS replace unsupported named companies unless the company IS the thesis
+- Use: "major hyperscalers" for Microsoft/Amazon/Google/Meta; "contracted power producers" for Vistra/Constellation/Talen; "leading AI chipmakers" for Nvidia/AMD/Broadcom; "large cloud providers" for AWS/Azure/GCP
+- If the sentence cannot survive generalization, remove it
+- Never invent specific data for unnamed entities
+
+needsResearchAddendum flags: only source-quality needsResearchAddendum flags are passed to you.
+For these, do NOT research — instead soften, generalize, or remove the claim.
+Non-source-quality needsResearchAddendum flags will not appear.
+
+JSON SAFETY: use single quotes inside HTML attributes. No line breaks inside JSON string values.
+
+Return ONLY valid JSON, no fences:
+{
+  "lede": "corrected lede or unchanged if no lede flags",
+  "body": "full corrected HTML body with all fixes applied",
+  "fixes_applied": ["brief description of each change made"],
+  "fixes_skipped": ["any flags skipped and why"]
+}`,
+      `ORIGINAL DRAFT:
+Title: ${savedDraft.title}
+Lede: ${savedDraft.lede}
+Body: ${savedDraft.body}
+
+RESEARCH (for correct data/URLs):
+${JSON.stringify({marketSnapshot:savedResearch.marketSnapshot,evidenceFor:savedResearch.evidenceFor,evidenceAgainst:savedResearch.evidenceAgainst,sourceList:savedResearch.sourceList},null,1)}
+
+FACT CHECK FLAGS TO FIX:
+${JSON.stringify(errorFlags,null,1)}`,
+      {maxTokens:4000}
+    );
+
+    const fixed=xJSON(fixRaw);
+
+    // Merge fixes into saved draft
+    const newDraft={...savedDraft};
+    if(fixed.lede)newDraft.lede=fixed.lede;
+    if(fixed.body)newDraft.body=fixed.body;
+    newDraft._wordCountApprox=true; // word count may have shifted slightly after fixes
+    savedDraft=newDraft;
+
+    log(5,`Applied: ${(fixed.fixes_applied||[]).length} fixes`,'ok');
+    (fixed.fixes_applied||[]).forEach(f=>log(5,'✓ '+f.substring(0,70),'ok'));
+    if((fixed.fixes_skipped||[]).length)fixed.fixes_skipped.forEach(f=>log(5,'⚠ Skipped: '+f.substring(0,60),'warn'));
+
+    stSet(5,'done',`${(fixed.fixes_applied||[]).length} fixes applied`);
+    pss(5,'done');
+
+    // Re-run fact check on fixed draft
+    log(5,'Re-running fact check on fixed draft…','info');
+    const fc2Raw=await callClaude(
+      `You are a fact-checking and source verification agent for a financial newsletter. Compare the fixed draft against the research briefing. Apply the same rules as the first fact-check pass — severity and triage must be consistent between passes.
+
+URL RULE: Plain-text footnote URLs count as valid source citations. Do NOT flag missing_url if a URL appears anywhere in the draft as a footnote reference, even as plain text.
+
+UNIT CONVERSION RULE: If a claim is a valid mathematical restatement or unit conversion of a cited figure — classify as ok. Only flag unsupported_number when the value has no traceable basis in the research JSON.
+
+SOURCE QUALITY RULES (identical to first pass):
+- market_return requires primary_market_data, company_filing_or_ir, or reputable_financial_media. Syndicated alone = weak_source_for_quant_claim (error).
+- valuation requires primary_market_data or company_filing_or_ir. Syndicated = weak_source_for_quant_claim (error).
+- blog_or_substack alone for quantitative claim = overrelies_on_blog_or_substack (warning).
+- Unit conversions and valid roundings of cited figures = ok, not unsupported_number.
+
+Return ONLY valid JSON, no fences:
+{
+  "flags":[{
+    "category":"unsupported_number|missing_url|instrument_imprecision|overconfident_projection|missing_counterargument|investment_advice|scenario_math_unlabeled|weak_source_for_quant_claim|source_does_not_support_claim|source_quality_mismatch|unverified_market_return|overrelies_on_blog_or_substack|exact_quote_missing|citation_present_but_claim_unproven|ok",
+    "severity":"error|warning|info|ok",
+    "excerpt":"exact quote max 20 words",
+    "issue":"...",
+    "suggestion":"...",
+    "claimType":"market_return|valuation|company_financial|institutional_report|macro_data|forecast|scenario_math|editorial_interpretation",
+    "requiredSourceQuality":"primary_market_data|company_filing_or_ir|official_institutional_report|reputable_financial_media|syndicated_market_article|any",
+    "actualSourceQuality":"primary_market_data|company_filing_or_ir|official_institutional_report|reputable_financial_media|syndicated_market_article|blog_or_substack|unknown|none",
+    "verificationStatus":"verified|partially_supported|unsupported|needs_primary_source",
+    "triage":"fixableWithExistingResearch|generalizeOrRemoveUnsupportedSpecificity|needsResearchAddendum",
+    "addendumQuery":"one-sentence search query or null"
+  }],
+  "sourceQualitySummary":{"weakSourceFlags":0,"unverifiedQuantClaims":0,"blogOnlyClaims":0,"overallSourceQuality":"strong|acceptable|weak|unreliable"},
+  "overallScore":"clean|minor_issues|needs_work",
+  "summary":"one sentence"
+}
+
+THREE-BUCKET TRIAGE (identical to first pass):
+1. fixableWithExistingResearch: surgical fix using existing research. Add qualifier, date, attribution, label scenario math, soften phrasing, fix instrument name, add counterargument from evidenceAgainst.
+2. generalizeOrRemoveUnsupportedSpecificity: named entity or figure not in research JSON but point survives generalization. Fix Agent broadens or removes.
+3. needsResearchAddendum: specific, essential, non-generalizable claim with no research JSON support. Source-quality needsResearchAddendum flags are softened/removed by Fix Agent, not researched.
+
+SEVERITY CALIBRATION (identical to first pass — be consistent):
+- error: Reader would be materially misled. Named entities without source, market return from syndicated-only, valuation from blog, direct investment advice.
+- warning: Weakens credibility but does not mislead. Weak source for qualitative claim, minor attribution gap, blog quant claim, unlabeled scenario math.
+- info: Valid restatement, unit conversion, defensible generalization, stylistic note.
+- ok: Fully supported at appropriate source quality for the claim type.`,
+      `RESEARCH:
+${JSON.stringify({marketSnapshot:savedResearch.marketSnapshot,evidenceFor:savedResearch.evidenceFor,evidenceAgainst:savedResearch.evidenceAgainst,sourceList:savedResearch.sourceList},null,1)}
+
+FIXED DRAFT (full):
+${(fixed.body||'').replace(/<[^>]+>/g,' ')}`,
+      {maxTokens:3000}
+    );
+    const fc2=xJSON(fc2Raw);
+    savedFc=fc2;
+    renderFactCheck(fc2,savedDraft);
+
+    const err2=(fc2.flags||[]).filter(f=>f.severity==='error').length;
+    const warn2=(fc2.flags||[]).filter(f=>f.severity==='warning').length;
+    const fc2Score=fc2.overallScore||(err2?'needs_work':warn2?'minor_issues':'clean');
+    log(5,`Re-check: ${err2} errors, ${warn2} warnings — ${fc2Score}`,err2===0?'ok':'warn');
+
+    pss(6,'active');
+    renderDraft(savedDraft,savedResearch,fc2);
+    await delay(200);
+    pss(6,'done');
+    document.getElementById('reviewSec').classList.add('on');
+    document.getElementById('reviewSec').scrollIntoView({behavior:'smooth',block:'start'});
+
+  }catch(err){
+    log(5,'Fix pass failed: '+err.message,'err');
+    stSet(5,'err','Failed');pss(6,'');
+  }finally{
+    btn.disabled=false;btn.textContent='Apply Fact Check Fixes';
+  }
+}
+
+function doApprove(){document.getElementById('approvedBar').classList.add('on');document.getElementById('approvedBar').scrollIntoView({behavior:'smooth'});issueNum++;}
+function doRewrite(){
+  document.getElementById('reviewSec').classList.remove('on');
+  document.getElementById('fcPanel').classList.remove('on');
+  document.getElementById('thesisGate').classList.remove('on');
+  document.getElementById('pipeline').classList.remove('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function cpHTML(){navigator.clipboard.writeText(document.getElementById('nlRender').innerHTML).then(()=>alert('HTML copied.'));}
+function cpText(){navigator.clipboard.writeText(document.getElementById('nlRender').innerText).then(()=>alert('Text copied.'));}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('roughInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doRefine();}});
+});
+</script>
+</body>
+</html>

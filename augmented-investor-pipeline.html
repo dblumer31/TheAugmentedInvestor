@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Augmented Investor — Pipeline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0c0c0c;
+  --surface: #141414;
+  --surface2: #1a1a1a;
+  --border: #262626;
+  --border2: #303030;
+  --text: #e8e4dc;
+  --muted: #5a5a5a;
+  --muted2: #7a7a7a;
+  --gold: #d4a843;
+  --gold2: #f0c866;
+  --red: #c8341a;
+  --green: #2d8a4e;
+  --green2: #3db368;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: rgba(12,12,12,0.95);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.logo span { color: var(--gold); }
+
+.pipeline-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.pipe-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.pipe-step .step-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: all 0.3s;
+}
+
+.pipe-step.active { color: var(--gold); border-color: rgba(212,168,67,0.2); background: rgba(212,168,67,0.05); }
+.pipe-step.active .step-dot { background: var(--gold); box-shadow: 0 0 6px var(--gold); animation: pulse 1s infinite; }
+.pipe-step.done { color: var(--green2); }
+.pipe-step.done .step-dot { background: var(--green2); }
+
+.pipe-arrow {
+  color: var(--border2);
+  font-size: 12px;
+  padding: 0 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── MAIN ── */
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ── INPUT SECTION ── */
+.input-section { margin-bottom: 48px; }
+
+.section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.input-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 32px;
+}
+
+.input-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.input-headline span { color: var(--gold); font-style: italic; }
+
+.input-sub {
+  color: var(--muted2);
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.topic-input-wrap {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-right: none;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 16px 20px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus { border-color: var(--gold); }
+input[type="text"]::placeholder { color: var(--muted); font-weight: 400; }
+
+.run-btn {
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: #0c0c0c;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 16px 28px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.run-btn:hover { background: var(--gold2); border-color: var(--gold2); }
+.run-btn:active { transform: scale(0.98); }
+.run-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+/* Controls row */
+.controls-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.control-group { display: flex; align-items: center; gap: 8px; }
+
+.control-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chip-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 2px;
+}
+
+.chip-btn:hover { border-color: var(--gold); color: var(--gold); }
+.chip-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(212,168,67,0.08); }
+
+/* ── PIPELINE TRACK ── */
+.pipeline-track { margin-bottom: 48px; }
+
+.stage {
+  border: 1px solid var(--border);
+  margin-bottom: 2px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.stage.active { border-color: rgba(212,168,67,0.4); }
+.stage.done { border-color: rgba(45,138,78,0.3); }
+.stage.error { border-color: rgba(200,52,26,0.4); }
+
+.stage-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--surface);
+  cursor: default;
+}
+
+.stage-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 24px;
+}
+
+.stage-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  flex: 1;
+  transition: color 0.3s;
+}
+
+.stage.active .stage-name { color: var(--gold); }
+.stage.done .stage-name { color: var(--green2); }
+.stage.error .stage-name { color: var(--red); }
+
+.stage-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  transition: color 0.3s;
+}
+
+.stage.active .stage-status { color: var(--gold); }
+.stage.done .stage-status { color: var(--green2); }
+.stage.error .stage-status { color: var(--red); }
+
+.stage-bar {
+  height: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.stage-progress {
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  transition: width 0.4s ease;
+}
+
+.stage.done .stage-progress { width: 100%; background: var(--green2); }
+.stage.error .stage-progress { width: 100%; background: var(--red); }
+
+/* Stage details (collapsible) */
+.stage-detail {
+  display: none;
+  padding: 0 20px 16px;
+  background: var(--surface);
+}
+
+.stage.active .stage-detail,
+.stage.done .stage-detail,
+.stage.error .stage-detail { display: block; }
+
+.detail-log {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  line-height: 1.7;
+  border-left: 2px solid var(--border2);
+  padding-left: 12px;
+}
+
+.log-line { opacity: 0; animation: fadeIn 0.3s forwards; }
+@keyframes fadeIn { to { opacity: 1; } }
+
+.log-line.ok { color: var(--green2); }
+.log-line.warn { color: var(--gold); }
+.log-line.err { color: var(--red); }
+
+/* ── REVIEW SECTION ── */
+.review-section {
+  display: none;
+  margin-bottom: 48px;
+}
+.review-section.visible { display: block; }
+
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.review-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.review-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted2);
+  display: flex;
+  gap: 16px;
+}
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+}
+
+.badge-gold { background: rgba(212,168,67,0.15); color: var(--gold); border: 1px solid rgba(212,168,67,0.3); }
+.badge-green { background: rgba(45,138,78,0.15); color: var(--green2); border: 1px solid rgba(45,138,78,0.3); }
+
+/* Newsletter render */
+.newsletter-render {
+  padding: 48px 56px;
+  background: #faf7f1;
+  color: #1a1710;
+}
+
+@media(max-width:600px) { .newsletter-render { padding: 28px 20px; } }
+
+.nl-issue-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a8070;
+  margin-bottom: 8px;
+}
+
+.nl-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #1a1710;
+  margin-bottom: 8px;
+}
+
+.nl-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-style: italic;
+  color: #6a6050;
+  margin-bottom: 20px;
+}
+
+.nl-rule { border: none; border-top: 2px solid #1a1710; margin: 20px 0; }
+.nl-rule-sm { border: none; border-top: 1px solid #d8d0c0; margin: 20px 0; }
+
+.nl-lede {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  line-height: 1.65;
+  color: #1a1710;
+  margin-bottom: 20px;
+}
+
+.nl-body {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #3d3a30;
+}
+
+.nl-body p { margin-bottom: 16px; }
+
+.nl-body h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1710;
+  margin: 32px 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.nl-body h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #c8341a;
+  margin: 24px 0 8px;
+}
+
+.nl-body strong { color: #1a1710; }
+
+.nl-pullquote {
+  border-left: 3px solid #c8341a;
+  margin: 24px 0;
+  padding: 14px 20px;
+  background: rgba(200,52,26,0.04);
+}
+
+.nl-pullquote p {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: #1a1710;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.nl-footer-line {
+  margin-top: 32px;
+  padding-top: 14px;
+  border-top: 1px solid #d8d0c0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a8070;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Action buttons */
+.review-actions {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--surface2);
+}
+
+.act-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 2px;
+}
+
+.act-btn:hover { border-color: var(--text); color: var(--text); }
+
+.act-btn.approve {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+  font-weight: 700;
+}
+
+.act-btn.approve:hover { background: var(--green2); border-color: var(--green2); }
+
+.act-btn.rewrite {
+  border-color: rgba(212,168,67,0.4);
+  color: var(--gold);
+}
+
+.act-btn.rewrite:hover { border-color: var(--gold); background: rgba(212,168,67,0.08); }
+
+/* Error card */
+.error-card {
+  display: none;
+  background: rgba(200,52,26,0.06);
+  border: 1px solid rgba(200,52,26,0.25);
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #e06040;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.error-card.visible { display: block; }
+
+/* Approved state */
+.approved-banner {
+  display: none;
+  background: rgba(45,138,78,0.1);
+  border: 1px solid rgba(45,138,78,0.3);
+  padding: 16px 24px;
+  margin-top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--green2);
+  letter-spacing: 0.06em;
+}
+.approved-banner.visible { display: flex; align-items: center; gap: 10px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">The Augmented <span>Investor</span></div>
+  <div class="pipeline-indicator">
+    <div class="pipe-step" id="ps-research">
+      <div class="step-dot"></div>Research
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step" id="ps-write">
+      <div class="step-dot"></div>Write
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step" id="ps-review">
+      <div class="step-dot"></div>Review
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- INPUT -->
+  <div class="input-section">
+    <div class="section-eyebrow">New Issue</div>
+    <div class="input-card">
+      <div class="input-headline">What's the <span>story</span><br>this week?</div>
+      <div class="input-sub">Type a topic. The pipeline researches it, writes the issue, and hands it to you for approval.</div>
+
+      <div class="topic-input-wrap">
+        <input type="text" id="topicInput" placeholder="e.g. AI hedge funds, LLM trading signals, Fed policy and machine learning…" />
+        <button class="run-btn" id="runBtn" onclick="runPipeline()">Run Pipeline →</button>
+      </div>
+
+      <div class="controls-row">
+        <div class="control-group">
+          <span class="control-label">Depth</span>
+          <button class="chip-btn" onclick="setCtrl('depth','quick',this)">Quick</button>
+          <button class="chip-btn active" onclick="setCtrl('depth','standard',this)">Standard</button>
+          <button class="chip-btn" onclick="setCtrl('depth','deep',this)">Deep</button>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Length</span>
+          <button class="chip-btn" onclick="setCtrl('length','short',this)">Short</button>
+          <button class="chip-btn active" onclick="setCtrl('length','standard',this)">Standard</button>
+          <button class="chip-btn" onclick="setCtrl('length','long',this)">Long</button>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Format</span>
+          <button class="chip-btn active" onclick="setCtrl('format','narrative',this)">Narrative</button>
+          <button class="chip-btn" onclick="setCtrl('format','sections',this)">Sections</button>
+          <button class="chip-btn" onclick="setCtrl('format','briefing',this)">Briefing</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINE TRACK -->
+  <div class="pipeline-track" id="pipelineTrack" style="display:none">
+    <div class="section-eyebrow">Pipeline Running</div>
+
+    <div class="error-card" id="errorCard"></div>
+
+    <!-- Stage 1: Research -->
+    <div class="stage" id="stage-research">
+      <div class="stage-header">
+        <span class="stage-num">01</span>
+        <span class="stage-name">Research Agent</span>
+        <span class="stage-status" id="st-research">Waiting</span>
+      </div>
+      <div class="stage-bar"><div class="stage-progress" id="sp-research"></div></div>
+      <div class="stage-detail">
+        <div class="detail-log" id="log-research"></div>
+      </div>
+    </div>
+
+    <!-- Stage 2: Write -->
+    <div class="stage" id="stage-write">
+      <div class="stage-header">
+        <span class="stage-num">02</span>
+        <span class="stage-name">Writer Agent</span>
+        <span class="stage-status" id="st-write">Waiting</span>
+      </div>
+      <div class="stage-bar"><div class="stage-progress" id="sp-write"></div></div>
+      <div class="stage-detail">
+        <div class="detail-log" id="log-write"></div>
+      </div>
+    </div>
+
+    <!-- Stage 3: Review -->
+    <div class="stage" id="stage-review">
+      <div class="stage-header">
+        <span class="stage-num">03</span>
+        <span class="stage-name">Ready for Review</span>
+        <span class="stage-status" id="st-review">Waiting</span>
+      </div>
+      <div class="stage-bar"><div class="stage-progress" id="sp-review"></div></div>
+      <div class="stage-detail">
+        <div class="detail-log" id="log-review"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW OUTPUT -->
+  <div class="review-section" id="reviewSection">
+    <div class="section-eyebrow">Your Review</div>
+    <div class="review-card">
+      <div class="review-header">
+        <span class="review-title">Draft Issue</span>
+        <div class="review-meta">
+          <span id="reviewWordCount"></span>
+          <span id="reviewContrarian"></span>
+          <span id="reviewSubject"></span>
+        </div>
+      </div>
+      <div class="newsletter-render" id="newsletterRender"></div>
+      <div class="review-actions">
+        <button class="act-btn approve" onclick="approveDraft()">✓ Approve &amp; Publish</button>
+        <button class="act-btn rewrite" onclick="rewriteDraft()">↺ Rewrite</button>
+        <button class="act-btn" onclick="copyDraftHTML()">Copy HTML</button>
+        <button class="act-btn" onclick="copyDraftText()">Copy Text</button>
+      </div>
+    </div>
+    <div class="approved-banner" id="approvedBanner">
+      <span>✓</span>
+      <span>Issue approved — Distribution Agent (coming next) will send this to Beehiiv automatically.</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ctrl = { depth: 'standard', length: 'standard', format: 'narrative' };
+let currentDraft = null;
+let isRunning = false;
+let issueNumber = Math.floor(Math.random() * 40) + 12;
+
+function setCtrl(key, val, el) {
+  ctrl[key] = val;
+  el.closest('.control-group').querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Pipeline Step Indicators ──
+function setPipeStep(id, state) {
+  const el = document.getElementById('ps-' + id);
+  el.className = 'pipe-step ' + state;
+}
+
+// ── Stage State ──
+function setStage(id, state, statusText) {
+  const stage = document.getElementById('stage-' + id);
+  const st = document.getElementById('st-' + id);
+  const sp = document.getElementById('sp-' + id);
+  stage.className = 'stage ' + state;
+  if (statusText) st.textContent = statusText;
+  if (state === 'active') {
+    // Animate progress bar
+    let w = 0;
+    const iv = setInterval(() => {
+      w = Math.min(w + Math.random() * 8, 88);
+      sp.style.width = w + '%';
+      if (w >= 88) clearInterval(iv);
+    }, 400);
+    stage._progressInterval = iv;
+  }
+  if (state === 'done' || state === 'error') {
+    if (stage._progressInterval) clearInterval(stage._progressInterval);
+  }
+}
+
+// ── Log lines ──
+function addLog(id, text, type = '') {
+  const log = document.getElementById('log-' + id);
+  const line = document.createElement('div');
+  line.className = 'log-line ' + type;
+  line.textContent = '› ' + text;
+  log.appendChild(line);
+}
+
+function clearLog(id) {
+  document.getElementById('log-' + id).innerHTML = '';
+}
+
+// ── JSON extraction ──
+function extractJSON(text) {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON found in response');
+  return JSON.parse(text.slice(start, end + 1));
+}
+
+// ── MAIN PIPELINE ──
+async function runPipeline() {
+  if (isRunning) return;
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) return;
+
+  isRunning = true;
+  currentDraft = null;
+
+  // Reset UI
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('runBtn').textContent = 'Running…';
+  document.getElementById('pipelineTrack').style.display = 'block';
+  document.getElementById('reviewSection').classList.remove('visible');
+  document.getElementById('approvedBanner').classList.remove('visible');
+  document.getElementById('errorCard').classList.remove('visible');
+
+  ['research','write','review'].forEach(id => {
+    setStage(id, '', 'Waiting');
+    clearLog(id);
+    document.getElementById('sp-' + id).style.width = '0%';
+  });
+
+  setPipeStep('research', '');
+  setPipeStep('write', '');
+  setPipeStep('review', '');
+
+  try {
+    // ════════════════════════════════
+    // STAGE 1: RESEARCH
+    // ════════════════════════════════
+    setStage('research', 'active', 'Searching…');
+    setPipeStep('research', 'active');
+    addLog('research', 'Initializing research agent');
+    addLog('research', `Topic: "${topic}"`);
+    addLog('research', 'Running web search for latest signals…');
+
+    const depthMap = {
+      quick: 'Give 2-3 top stories. Be concise.',
+      standard: 'Give 4-5 top stories with solid investor-focused analysis.',
+      deep: 'Give 6-7 stories with deep analysis, contrarian angles, and data points.'
+    };
+
+    const researchSystem = `You are a research agent for "The Augmented Investor," a newsletter at the intersection of AI and finance/investing. Use web search to find current news.
+
+Respond ONLY with valid JSON — no fences, no preamble:
+{
+  "week": "Week of May 2026",
+  "focus": "...",
+  "tldr": "2-sentence exec summary",
+  "stories": [
+    {
+      "rank": 1,
+      "headline": "...",
+      "summary": "2-3 sentences",
+      "investor_angle": "Why this matters for investors",
+      "signal": "high|medium|low",
+      "tags": ["tag1","tag2"]
+    }
+  ],
+  "meta_insight": "Contrarian or forward-looking observation",
+  "suggested_hook": "Compelling newsletter opening line"
+}`;
+
+    const researchRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: researchSystem,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Research topic: "${topic}". Date: May 2026. ${depthMap[ctrl.depth]} Prioritize stories from the last 7-14 days. Focus on investor relevance.`
+        }]
+      })
+    });
+
+    if (!researchRes.ok) {
+      const e = await researchRes.json();
+      throw new Error('Research API error: ' + (e.error?.message || researchRes.status));
+    }
+
+    const researchData = await researchRes.json();
+    const researchRaw = researchData.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const briefing = extractJSON(researchRaw);
+
+    addLog('research', `Found ${briefing.stories?.length || 0} stories`, 'ok');
+    addLog('research', `Top signal: ${briefing.stories?.[0]?.headline?.substring(0,50)}…`, 'ok');
+    addLog('research', 'Briefing ready — passing to writer', 'ok');
+    setStage('research', 'done', `${briefing.stories?.length || 0} stories`);
+    setPipeStep('research', 'done');
+
+    // Small delay for UX clarity
+    await new Promise(r => setTimeout(r, 600));
+
+    // ════════════════════════════════
+    // STAGE 2: WRITE
+    // ════════════════════════════════
+    setStage('write', 'active', 'Drafting…');
+    setPipeStep('write', 'active');
+    addLog('write', 'Received research briefing');
+    addLog('write', `Focus: ${briefing.focus || topic}`);
+    addLog('write', 'Finding the angle…');
+
+    const researchContext = `RESEARCH BRIEFING:
+Focus: ${briefing.focus}
+TL;DR: ${briefing.tldr}
+Stories:
+${(briefing.stories||[]).map(s => `- ${s.headline}: ${s.summary} | Investor angle: ${s.investor_angle}`).join('\n')}
+Meta insight: ${briefing.meta_insight}
+Suggested hook: ${briefing.suggested_hook}`;
+
+    const lengthMap = {
+      short: '400–600 words. Tight lede, one main story, punchy close.',
+      standard: '700–1000 words. 2-3 stories with strong narrative arc.',
+      long: '1200–1600 words. Full issue with multiple sections, data, and investor takeaway.'
+    };
+
+    const formatMap = {
+      narrative: 'One flowing essay. Stories weave together naturally.',
+      sections: 'Clearly labeled sections with ## headings.',
+      briefing: 'Short punchy paragraphs, bold key phrases, fast pace.'
+    };
+
+    const writerSystem = `You are the writer for "The Augmented Investor."
+
+VOICE: Sharp, contrarian, never boring. Write for smart people tired of being talked down to. Lead with what everyone's missing. One sharp sentence beats three safe ones. Name the tension. Always connect back to what this means for money. Never say "it remains to be seen." Never be preachy.
+
+OUTPUT: Respond ONLY with valid JSON — no fences, no preamble:
+{
+  "issue_number": "${issueNumber}",
+  "date": "May 2026",
+  "subject_line": "Email subject line (punchy, under 60 chars)",
+  "title": "Issue headline (sharp, under 10 words)",
+  "subtitle": "One-line italic subhead",
+  "lede": "Opening paragraph — the hook. 2-3 sentences. Most important part.",
+  "body": "Full newsletter body as HTML. Use <p>, <h2>, <h3>, <strong>, <em>. Include at least one <blockquote><p>pullquote</p></blockquote>.",
+  "word_count": number,
+  "contrarian_score": "1-10"
+}`;
+
+    addLog('write', 'Writing the lede…');
+
+    const writerRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: writerSystem,
+        messages: [{
+          role: 'user',
+          content: `Write a newsletter issue based on:\n\n${researchContext}\n\nLength: ${ctrl.length} — ${lengthMap[ctrl.length]}\nFormat: ${ctrl.format} — ${formatMap[ctrl.format]}`
+        }]
+      })
+    });
+
+    if (!writerRes.ok) {
+      const e = await writerRes.json();
+      throw new Error('Writer API error: ' + (e.error?.message || writerRes.status));
+    }
+
+    const writerData = await writerRes.json();
+    const writerRaw = writerData.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const draft = extractJSON(writerRaw);
+    currentDraft = draft;
+
+    addLog('write', `Draft complete — ~${draft.word_count || '?'} words`, 'ok');
+    addLog('write', `Contrarian score: ${draft.contrarian_score}/10`, draft.contrarian_score >= 7 ? 'ok' : 'warn');
+    addLog('write', 'Sending to review queue', 'ok');
+    setStage('write', 'done', `~${draft.word_count || '?'} words`);
+    setPipeStep('write', 'done');
+
+    await new Promise(r => setTimeout(r, 400));
+
+    // ════════════════════════════════
+    // STAGE 3: REVIEW
+    // ════════════════════════════════
+    setStage('review', 'active', 'Preparing…');
+    setPipeStep('review', 'active');
+    addLog('review', 'Draft received from writer');
+    addLog('review', 'Rendering newsletter preview…');
+
+    renderDraft(draft);
+
+    await new Promise(r => setTimeout(r, 300));
+
+    addLog('review', 'Ready for your review', 'ok');
+    setStage('review', 'done', 'Awaiting approval');
+    setPipeStep('review', 'done');
+
+    document.getElementById('reviewSection').classList.add('visible');
+    document.getElementById('reviewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(err) {
+    const ec = document.getElementById('errorCard');
+    ec.textContent = '⚠ ' + err.message;
+    ec.classList.add('visible');
+
+    // Mark current active stage as error
+    ['research','write','review'].forEach(id => {
+      if (document.getElementById('stage-' + id).classList.contains('active')) {
+        setStage(id, 'error', 'Failed');
+        addLog(id, err.message, 'err');
+      }
+    });
+  } finally {
+    isRunning = false;
+    document.getElementById('runBtn').disabled = false;
+    document.getElementById('runBtn').textContent = 'Run Pipeline →';
+  }
+}
+
+function renderDraft(d) {
+  const body = (d.body || '').replace(/<blockquote>/g, '<div class="nl-pullquote">').replace(/<\/blockquote>/g, '</div>');
+
+  document.getElementById('newsletterRender').innerHTML = `
+    <div class="nl-issue-line">Issue ${d.issue_number} · ${d.date}</div>
+    <div class="nl-title">${esc(d.title)}</div>
+    <div class="nl-subtitle">${esc(d.subtitle)}</div>
+    <hr class="nl-rule">
+    <div class="nl-lede">${esc(d.lede)}</div>
+    <hr class="nl-rule-sm">
+    <div class="nl-body">${body}</div>
+    <div class="nl-footer-line">
+      <span>The Augmented Investor</span>
+      <span>Subject: ${esc(d.subject_line)}</span>
+    </div>
+  `;
+
+  document.getElementById('reviewWordCount').textContent = `~${d.word_count || '?'} words`;
+  document.getElementById('reviewContrarian').textContent = `Contrarian: ${d.contrarian_score}/10`;
+  document.getElementById('reviewSubject').textContent = `"${d.subject_line || ''}"`;
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function approveDraft() {
+  document.getElementById('approvedBanner').classList.add('visible');
+  document.getElementById('approvedBanner').scrollIntoView({ behavior: 'smooth' });
+  issueNumber++;
+}
+
+function rewriteDraft() {
+  document.getElementById('reviewSection').classList.remove('visible');
+  document.getElementById('topicInput').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyDraftHTML() {
+  navigator.clipboard.writeText(document.getElementById('newsletterRender').innerHTML)
+    .then(() => alert('HTML copied to clipboard.'));
+}
+
+function copyDraftText() {
+  navigator.clipboard.writeText(document.getElementById('newsletterRender').innerText)
+    .then(() => alert('Plain text copied to clipboard.'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('topicInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runPipeline();
+  });
+});
+</script>
+</body>
+</html>

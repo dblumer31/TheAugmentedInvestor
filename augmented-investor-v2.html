@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Augmented Investor — Editorial Pipeline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0b0b0d;
+  --surface: #111115;
+  --surface2: #16161c;
+  --border: #222228;
+  --border2: #2e2e38;
+  --text: #e4e0d8;
+  --muted: #52525e;
+  --muted2: #78788a;
+  --gold: #c9a84c;
+  --gold2: #e8c870;
+  --gold-dim: rgba(201,168,76,0.12);
+  --red: #b83020;
+  --green: #287a45;
+  --green2: #38b068;
+  --blue: #3470b8;
+  --blue2: #5898e8;
+  --purple: #7848c8;
+  --purple2: #a878f0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+}
+
+/* ══ TOPBAR ══ */
+.topbar {
+  height: 52px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(11,11,13,0.96);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+.logo em { color: var(--gold); font-style: normal; }
+
+.stage-track {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.st {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.25s;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.st .d { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); transition: all 0.25s; }
+.st.active { color: var(--gold); border-color: rgba(201,168,76,0.25); background: var(--gold-dim); }
+.st.active .d { background: var(--gold); box-shadow: 0 0 5px var(--gold); animation: dp 1s infinite; }
+.st.done { color: var(--green2); }
+.st.done .d { background: var(--green2); }
+.st-sep { color: var(--border2); font-size: 11px; font-family: 'JetBrains Mono', monospace; padding: 0 2px; }
+
+@keyframes dp { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+/* ══ LAYOUT ══ */
+.main { max-width: 920px; margin: 0 auto; padding: 44px 24px 100px; }
+
+/* ══ SECTION LABEL ══ */
+.sec-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ══ PROMPT BUILDER ══ */
+.prompt-builder {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.pb-head {
+  padding: 20px 24px 0;
+}
+
+.pb-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.pb-title em { color: var(--gold); font-style: italic; }
+
+.pb-sub {
+  font-size: 13px;
+  color: var(--muted2);
+  font-weight: 400;
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+/* Rough question input */
+.rough-row {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+}
+
+textarea.rough-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-right: none;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 18px;
+  outline: none;
+  resize: none;
+  min-height: 56px;
+  line-height: 1.4;
+  transition: border-color 0.2s;
+}
+textarea.rough-input:focus { border-color: var(--gold); }
+textarea.rough-input::placeholder { color: var(--muted); font-weight: 400; font-size: 14px; }
+
+.refine-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  align-self: stretch;
+  display: flex; align-items: center; gap: 6px;
+}
+.refine-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+.refine-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Scope form */
+.scope-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 0 24px 20px;
+}
+
+.scope-field label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 6px;
+}
+
+.scope-field select,
+.scope-field input[type="text"] {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 12px;
+  outline: none;
+  border-radius: 2px;
+  appearance: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+.scope-field select:focus,
+.scope-field input[type="text"]:focus { border-color: var(--gold); }
+.scope-field select option { background: #1a1a22; }
+
+/* Refined query display */
+.refined-block {
+  display: none;
+  margin: 0 24px 20px;
+  background: var(--bg);
+  border: 1px solid rgba(201,168,76,0.25);
+  border-left: 3px solid var(--gold);
+  padding: 14px 18px;
+}
+.refined-block.visible { display: block; }
+
+.refined-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.refined-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text);
+  font-weight: 400;
+}
+
+textarea.refined-edit {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  line-height: 1.65;
+  font-weight: 400;
+  resize: vertical;
+  outline: none;
+  min-height: 80px;
+}
+
+.edit-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 6px;
+  letter-spacing: 0.08em;
+}
+
+/* Run button */
+.pb-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--surface2);
+}
+
+.run-btn {
+  background: var(--gold);
+  border: none;
+  color: #0b0b0d;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 13px 32px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 2px;
+}
+.run-btn:hover { background: var(--gold2); }
+.run-btn:active { transform: scale(0.98); }
+.run-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+.ctrl-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.ctrl-group { display: flex; align-items: center; gap: 6px; }
+.ctrl-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+.chip {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 2px;
+}
+.chip:hover { border-color: var(--gold); color: var(--gold); }
+.chip.on { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+/* ══ PIPELINE ══ */
+.pipeline { margin-bottom: 32px; display: none; }
+.pipeline.visible { display: block; }
+
+.error-bar {
+  display: none;
+  background: rgba(184,48,32,0.08);
+  border: 1px solid rgba(184,48,32,0.3);
+  padding: 12px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #d06050;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+.error-bar.visible { display: block; }
+
+.stage {
+  border: 1px solid var(--border);
+  margin-bottom: 3px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.stage.active { border-color: rgba(201,168,76,0.35); }
+.stage.done { border-color: rgba(56,176,104,0.25); }
+.stage.err { border-color: rgba(184,48,32,0.35); }
+
+.stage-hd {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 18px;
+  background: var(--surface);
+}
+
+.stage-n {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 20px;
+}
+
+.stage-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  flex: 1;
+  transition: color 0.25s;
+}
+.stage.active .stage-name { color: var(--gold); }
+.stage.done .stage-name { color: var(--green2); }
+.stage.err .stage-name { color: #d06050; }
+
+.stage-st {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  transition: color 0.25s;
+}
+.stage.active .stage-st { color: var(--gold); }
+.stage.done .stage-st { color: var(--green2); }
+.stage.err .stage-st { color: #d06050; }
+
+.stage-bar { height: 2px; background: var(--border); }
+.stage-prog {
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  transition: width 0.5s ease;
+}
+.stage.done .stage-prog { width: 100%; background: var(--green2); }
+.stage.err .stage-prog { width: 100%; background: var(--red); }
+
+.stage-log {
+  display: none;
+  padding: 10px 18px 14px 52px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+.stage.active .stage-log,
+.stage.done .stage-log,
+.stage.err .stage-log { display: block; }
+
+.log-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted2);
+  line-height: 1.8;
+  opacity: 0;
+  animation: fi 0.3s forwards;
+}
+@keyframes fi { to { opacity: 1; } }
+.log-line.ok { color: var(--green2); }
+.log-line.warn { color: var(--gold); }
+.log-line.err { color: #d06050; }
+.log-line.info { color: var(--blue2); }
+
+/* ══ THESIS PANEL ══ */
+.thesis-panel {
+  display: none;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.2);
+  margin-bottom: 32px;
+}
+.thesis-panel.visible { display: block; }
+
+.tp-head {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.tp-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.tp-body { padding: 20px 22px; }
+
+.thesis-stat {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 18px;
+  padding-left: 14px;
+  border-left: 3px solid var(--gold);
+}
+
+.thesis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+@media(max-width:620px) { .thesis-grid { grid-template-columns: 1fr; } }
+
+.tc {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+}
+
+.tc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.tc-label.bull { color: var(--green2); }
+.tc-label.bear { color: #d06050; }
+.tc-label.base { color: var(--blue2); }
+
+.tc-text { font-size: 12px; color: var(--muted2); line-height: 1.6; }
+
+.mispricing {
+  background: rgba(201,168,76,0.05);
+  border: 1px solid rgba(201,168,76,0.2);
+  padding: 12px 16px;
+  margin-top: 12px;
+}
+
+.mispricing-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.mispricing-text { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+/* ══ REVIEW ══ */
+.review-section { display: none; }
+.review-section.visible { display: block; }
+
+.review-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.review-hd {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+
+.review-title-txt {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.review-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.badge-gold { color: var(--gold); border-color: rgba(201,168,76,0.3); background: var(--gold-dim); }
+.badge-green { color: var(--green2); border-color: rgba(56,176,104,0.3); background: rgba(56,176,104,0.08); }
+.badge-blue { color: var(--blue2); border-color: rgba(88,152,232,0.3); background: rgba(88,152,232,0.08); }
+
+/* Newsletter */
+.newsletter {
+  background: #f7f3ec;
+  color: #1a1710;
+  padding: 52px 60px;
+}
+@media(max-width:600px) { .newsletter { padding: 28px 20px; } }
+
+.nl-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8a8070;
+  margin-bottom: 8px;
+}
+
+.nl-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px,4vw,40px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #1a1710;
+  margin-bottom: 8px;
+}
+
+.nl-sub {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-style: italic;
+  color: #6a6050;
+  margin-bottom: 20px;
+}
+
+.nl-rule { border: none; border-top: 2px solid #1a1710; margin: 18px 0; }
+.nl-rule-sm { border: none; border-top: 1px solid #d0c8b8; margin: 20px 0; }
+
+.nl-lede {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  line-height: 1.65;
+  color: #1a1710;
+  margin-bottom: 18px;
+}
+
+.nl-body { font-family: 'Syne', sans-serif; font-size: 15px; line-height: 1.8; color: #3a3628; }
+.nl-body p { margin-bottom: 16px; }
+.nl-body h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #1a1710; margin: 28px 0 10px; }
+.nl-body h3 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #b83020; margin: 22px 0 8px; }
+.nl-body strong { color: #1a1710; }
+.nl-body em { font-family: 'Playfair Display', serif; font-style: italic; }
+
+.nl-pq {
+  border-left: 3px solid #b83020;
+  margin: 22px 0;
+  padding: 12px 18px;
+  background: rgba(184,48,32,0.04);
+}
+.nl-pq p {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-style: italic;
+  color: #1a1710;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.nl-sources {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #d0c8b8;
+}
+.nl-sources-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a8070;
+  margin-bottom: 8px;
+}
+.nl-source-item {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #6a6050;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.nl-footer {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid #d0c8b8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a8070;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+}
+
+/* Review actions */
+.review-actions {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+
+.act {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 2px;
+}
+.act:hover { border-color: var(--text); color: var(--text); }
+.act.approve { background: var(--green); border-color: var(--green); color: #fff; font-weight: 700; }
+.act.approve:hover { background: var(--green2); border-color: var(--green2); }
+.act.rewrite { border-color: rgba(201,168,76,0.4); color: var(--gold); }
+.act.rewrite:hover { background: var(--gold-dim); border-color: var(--gold); }
+
+.approved-bar {
+  display: none;
+  background: rgba(40,122,69,0.1);
+  border: 1px solid rgba(56,176,104,0.3);
+  padding: 14px 22px;
+  margin-top: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--green2);
+  letter-spacing: 0.06em;
+}
+.approved-bar.visible { display: flex; align-items: center; gap: 10px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">The Augmented <em>Investor</em></div>
+  <div class="stage-track">
+    <div class="st" id="ps0"><div class="d"></div>Scope</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps1"><div class="d"></div>Research</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps2"><div class="d"></div>Thesis</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps3"><div class="d"></div>Write</div>
+    <div class="st-sep">›</div>
+    <div class="st" id="ps4"><div class="d"></div>Review</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══ PROMPT BUILDER ══ -->
+  <div class="sec-label">New Issue</div>
+  <div class="prompt-builder" id="promptBuilder">
+    <div class="pb-head">
+      <div class="pb-title">What's the <em>story</em><br>this week?</div>
+      <div class="pb-sub">Type your rough question. The pipeline will scope it, sharpen it, then research → thesis → write it automatically.</div>
+      <div class="rough-row">
+        <textarea class="rough-input" id="roughInput" rows="2" placeholder="e.g. What's going on with European markets? How does it connect to longer-term trends?"></textarea>
+        <button class="refine-btn" id="refineBtn" onclick="refinePrompt()">
+          <span>⟳</span> Refine
+        </button>
+      </div>
+    </div>
+
+    <!-- SCOPE FORM -->
+    <div class="scope-grid">
+      <div class="scope-field">
+        <label>Market / Asset</label>
+        <select id="sf-market">
+          <option value="European equities (STOXX 600, DAX, CAC 40, FTSE 100)">European Equities</option>
+          <option value="US equities (S&P 500, Nasdaq, Russell 2000)">US Equities</option>
+          <option value="emerging market equities">Emerging Markets</option>
+          <option value="global fixed income and rates">Rates & Bonds</option>
+          <option value="FX and currency markets">FX / Currency</option>
+          <option value="commodities and energy">Commodities</option>
+          <option value="private markets and venture capital">Private Markets / VC</option>
+          <option value="crypto and digital assets">Crypto</option>
+          <option value="AI and technology sector equities">AI / Tech Sector</option>
+          <option value="hedge funds and alternative strategies">Hedge Funds / Alts</option>
+        </select>
+      </div>
+      <div class="scope-field">
+        <label>Recent Window</label>
+        <select id="sf-recent">
+          <option value="last 1-2 weeks">Last 1–2 Weeks</option>
+          <option value="last 2-4 weeks" selected>Last 2–4 Weeks</option>
+          <option value="last 1-3 months">Last 1–3 Months</option>
+          <option value="last 6 months">Last 6 Months</option>
+        </select>
+      </div>
+      <div class="scope-field">
+        <label>Context Window</label>
+        <select id="sf-context">
+          <option value="3 months">3-Month Context</option>
+          <option value="6 months">6-Month Context</option>
+          <option value="12 months" selected>12-Month Context</option>
+          <option value="3 years">3-Year Context</option>
+        </select>
+      </div>
+      <div class="scope-field">
+        <label>Reader Horizon</label>
+        <select id="sf-horizon">
+          <option value="tactical (1–4 weeks)">Tactical — 1–4 Weeks</option>
+          <option value="medium-term (1–3 months)" selected>Medium-Term — 1–3 Months</option>
+          <option value="strategic (6–12 months)">Strategic — 6–12 Months</option>
+          <option value="long-term structural (1–3 years)">Long-Term Structural</option>
+        </select>
+      </div>
+      <div class="scope-field">
+        <label>Reader Type</label>
+        <select id="sf-reader">
+          <option value="US-based institutional investor">US Institutional</option>
+          <option value="US-based sophisticated retail investor" selected>US Retail (Sophisticated)</option>
+          <option value="global macro investor">Global Macro</option>
+          <option value="long-only equity investor">Long-Only Equity</option>
+          <option value="RIA / wealth manager">RIA / Wealth Manager</option>
+        </select>
+      </div>
+      <div class="scope-field">
+        <label>Contrarian Lean</label>
+        <select id="sf-contrarian">
+          <option value="balanced">Balanced</option>
+          <option value="mildly contrarian" selected>Mildly Contrarian</option>
+          <option value="sharply contrarian — challenge the consensus hard">Sharply Contrarian</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- REFINED QUERY BLOCK -->
+    <div class="refined-block" id="refinedBlock">
+      <div class="refined-label">
+        <span>Refined Research Query</span>
+        <span style="color:var(--muted);font-size:9px">Edit freely before running</span>
+      </div>
+      <textarea class="refined-edit" id="refinedEdit"></textarea>
+      <div class="edit-hint">This exact query goes to the Research Agent. Edit to sharpen further.</div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="pb-footer">
+      <div class="ctrl-row">
+        <div class="ctrl-group">
+          <span class="ctrl-label">Depth</span>
+          <button class="chip" onclick="setC('depth','quick',this)">Quick</button>
+          <button class="chip on" onclick="setC('depth','standard',this)">Standard</button>
+          <button class="chip" onclick="setC('depth','deep',this)">Deep</button>
+        </div>
+        <div class="ctrl-group">
+          <span class="ctrl-label">Length</span>
+          <button class="chip" onclick="setC('length','short',this)">Short</button>
+          <button class="chip on" onclick="setC('length','standard',this)">Standard</button>
+          <button class="chip" onclick="setC('length','long',this)">Long</button>
+        </div>
+      </div>
+      <button class="run-btn" id="runBtn" onclick="runPipeline()">Run Pipeline →</button>
+    </div>
+  </div>
+
+  <!-- ══ PIPELINE ══ -->
+  <div class="pipeline" id="pipeline">
+    <div class="sec-label">Pipeline</div>
+    <div class="error-bar" id="errorBar"></div>
+
+    <div class="stage" id="s0">
+      <div class="stage-hd">
+        <span class="stage-n">00</span>
+        <span class="stage-name">Prompt Refiner</span>
+        <span class="stage-st" id="ss0">Waiting</span>
+      </div>
+      <div class="stage-bar"><div class="stage-prog" id="sp0"></div></div>
+      <div class="stage-log" id="sl0"></div>
+    </div>
+
+    <div class="stage" id="s1">
+      <div class="stage-hd">
+        <span class="stage-n">01</span>
+        <span class="stage-name">Research Agent</span>
+        <span class="stage-st" id="ss1">Waiting</span>
+      </div>
+      <div class="stage-bar"><div class="stage-prog" id="sp1"></div></div>
+      <div class="stage-log" id="sl1"></div>
+    </div>
+
+    <div class="stage" id="s2">
+      <div class="stage-hd">
+        <span class="stage-n">02</span>
+        <span class="stage-name">Thesis Agent</span>
+        <span class="stage-st" id="ss2">Waiting</span>
+      </div>
+      <div class="stage-bar"><div class="stage-prog" id="sp2"></div></div>
+      <div class="stage-log" id="sl2"></div>
+    </div>
+
+    <div class="stage" id="s3">
+      <div class="stage-hd">
+        <span class="stage-n">03</span>
+        <span class="stage-name">Writer Agent</span>
+        <span class="stage-st" id="ss3">Waiting</span>
+      </div>
+      <div class="stage-bar"><div class="stage-prog" id="sp3"></div></div>
+      <div class="stage-log" id="sl3"></div>
+    </div>
+  </div>
+
+  <!-- ══ THESIS SUMMARY ══ -->
+  <div class="thesis-panel" id="thesisPanel">
+    <div class="tp-head">
+      <span class="tp-title">Thesis Agent — Decision Brief</span>
+      <span id="thesisConfidence" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2)"></span>
+    </div>
+    <div class="tp-body">
+      <div class="thesis-stat" id="thesisStatement"></div>
+      <div class="thesis-grid">
+        <div class="tc">
+          <div class="tc-label bull">Bull Case</div>
+          <div class="tc-text" id="tcBull"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-label base">Base Case</div>
+          <div class="tc-text" id="tcBase"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-label bear">Bear Case</div>
+          <div class="tc-text" id="tcBear"></div>
+        </div>
+      </div>
+      <div class="mispricing">
+        <div class="mispricing-label">What Investors May Be Mispricing</div>
+        <div class="mispricing-text" id="tcMispricing"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ REVIEW ══ -->
+  <div class="review-section" id="reviewSection">
+    <div class="sec-label">Your Review</div>
+    <div class="review-wrap">
+      <div class="review-hd">
+        <span class="review-title-txt">Draft Issue</span>
+        <div class="review-badges">
+          <span class="badge badge-gold" id="bdgWords"></span>
+          <span class="badge badge-green" id="bdgContrarian"></span>
+          <span class="badge badge-blue" id="bdgSubject"></span>
+        </div>
+      </div>
+      <div class="newsletter" id="nlRender"></div>
+      <div class="review-actions">
+        <button class="act approve" onclick="approve()">✓ Approve</button>
+        <button class="act rewrite" onclick="rewrite()">↺ Rewrite</button>
+        <button class="act" onclick="cpHTML()">Copy HTML</button>
+        <button class="act" onclick="cpText()">Copy Text</button>
+      </div>
+    </div>
+    <div class="approved-bar" id="approvedBar">
+      <span>✓</span>
+      <span>Approved — Distribution Agent (next) will push this to Beehiiv automatically.</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const cfg = { depth: 'standard', length: 'standard' };
+let issueNum = Math.floor(Math.random()*40)+8;
+let isRunning = false;
+
+function setC(k, v, el) {
+  cfg[k] = v;
+  el.closest('.ctrl-group').querySelectorAll('.chip').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── Pipe step indicator ──
+function ps(id, state) {
+  const el = document.getElementById('ps' + id);
+  el.className = 'st ' + state;
+}
+
+// ── Stage control ──
+function stageSet(i, state, txt) {
+  const s = document.getElementById('s' + i);
+  const st = document.getElementById('ss' + i);
+  const sp = document.getElementById('sp' + i);
+  s.className = 'stage ' + state;
+  if (txt) st.textContent = txt;
+  if (state === 'active') {
+    let w = 0;
+    s._iv = setInterval(() => {
+      w = Math.min(w + Math.random()*9, 88);
+      sp.style.width = w + '%';
+      if (w >= 88) clearInterval(s._iv);
+    }, 350);
+  }
+  if (state === 'done' || state === 'err') {
+    if (s._iv) clearInterval(s._iv);
+  }
+}
+
+function log(i, txt, cls='') {
+  const el = document.getElementById('sl' + i);
+  const d = document.createElement('div');
+  d.className = 'log-line ' + cls;
+  d.textContent = '› ' + txt;
+  el.appendChild(d);
+}
+
+function clearLogs() {
+  for (let i=0;i<4;i++) {
+    document.getElementById('sl'+i).innerHTML = '';
+    document.getElementById('sp'+i).style.width = '0%';
+    stageSet(i, '', 'Waiting');
+  }
+}
+
+function xJSON(txt) {
+  const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+  if (s===-1||e===-1) throw new Error('No JSON in response');
+  return JSON.parse(txt.slice(s, e+1));
+}
+
+function scope() {
+  return {
+    market: document.getElementById('sf-market').value,
+    recent: document.getElementById('sf-recent').value,
+    context: document.getElementById('sf-context').value,
+    horizon: document.getElementById('sf-horizon').value,
+    reader: document.getElementById('sf-reader').value,
+    contrarian: document.getElementById('sf-contrarian').value,
+  };
+}
+
+// ── REFINE PROMPT ──
+async function refinePrompt() {
+  const rough = document.getElementById('roughInput').value.trim();
+  const sc = scope();
+  const btn = document.getElementById('refineBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⟳</span> Refining…';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        system: `You are a senior financial editor. Rewrite a vague research question into a precise, scoped research brief for a financial research agent. Return ONLY the refined query as plain text — no labels, no JSON, no preamble. Be specific about indices, timeframes, what to compare, and what the investor decision is. 2-4 sentences max.`,
+        messages: [{
+          role: 'user',
+          content: `Rough question: "${rough || '(none provided)'}"
+Scope settings:
+- Market: ${sc.market}
+- Recent window: ${sc.recent}
+- Historical context: ${sc.context}
+- Reader horizon: ${sc.horizon}
+- Reader type: ${sc.reader}
+- Contrarian lean: ${sc.contrarian}
+
+Write the refined research query.`
+        }]
+      })
+    });
+
+    const d = await res.json();
+    const refined = d.content.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    document.getElementById('refinedEdit').value = refined;
+    document.getElementById('refinedBlock').classList.add('visible');
+
+  } catch(e) {
+    document.getElementById('refinedEdit').value = 'Could not refine. Please type your query manually.';
+    document.getElementById('refinedBlock').classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>⟳</span> Re-refine';
+  }
+}
+
+// ── MAIN PIPELINE ──
+async function runPipeline() {
+  if (isRunning) return;
+
+  // Get the final query — refined if available, else rough + scope
+  let finalQuery = document.getElementById('refinedEdit').value.trim();
+  if (!finalQuery) {
+    const rough = document.getElementById('roughInput').value.trim();
+    if (!rough) { alert('Enter a topic first.'); return; }
+    // Auto-build from scope if no refined
+    const sc = scope();
+    finalQuery = `Research ${sc.market} for a ${sc.reader}. Compare ${sc.recent} vs prior ${sc.context}. Reader horizon: ${sc.horizon}. ${sc.contrarian}. Question: ${rough}`;
+  }
+
+  isRunning = true;
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('runBtn').textContent = 'Running…';
+  document.getElementById('pipeline').classList.add('visible');
+  document.getElementById('thesisPanel').classList.remove('visible');
+  document.getElementById('reviewSection').classList.remove('visible');
+  document.getElementById('approvedBar').classList.remove('visible');
+  document.getElementById('errorBar').classList.remove('visible');
+  clearLogs();
+  ['ps0','ps1','ps2','ps3','ps4'].forEach(id => { document.getElementById(id).className = 'st'; });
+
+  const sc = scope();
+  const depthMap = {
+    quick: '3-4 key data points per section.',
+    standard: '5-6 well-sourced claims per major section.',
+    deep: '8+ claims with specific data, dates, and multiple sources per section.'
+  };
+
+  try {
+
+    // ══════════════════════════════════════
+    // STAGE 0: LOG SCOPE (instant)
+    // ══════════════════════════════════════
+    stageSet(0, 'active', 'Scoping…');
+    ps(0, 'active');
+    log(0, `Market: ${sc.market}`);
+    log(0, `Recent: ${sc.recent} vs ${sc.context} context`);
+    log(0, `Reader: ${sc.reader} | Horizon: ${sc.horizon}`);
+    log(0, `Query locked: "${finalQuery.substring(0,80)}…"`, 'ok');
+    await new Promise(r=>setTimeout(r,400));
+    stageSet(0, 'done', 'Scoped');
+    ps(0, 'done');
+
+    // ══════════════════════════════════════
+    // STAGE 1: RESEARCH AGENT
+    // ══════════════════════════════════════
+    stageSet(1, 'active', 'Searching…');
+    ps(1, 'active');
+    log(1, 'Initializing research agent');
+    log(1, 'Running live web search…');
+
+    const resSystem = `You are a financial research agent for an investor newsletter. Your job is to return a structured, cited briefing — NOT prose, NOT an article. Every claim must have a source, date, and confidence level.
+
+Return ONLY valid JSON, no fences, no preamble:
+{
+  "topic": "...",
+  "oneSentenceSummary": "The single most important thing to know right now.",
+  "marketSnapshot": [
+    { "claim": "...", "evidence": "...", "source": "publication or URL", "date": "...", "confidence": "high|medium|low" }
+  ],
+  "priorTrend": [
+    { "claim": "...", "evidence": "...", "source": "...", "date": "...", "confidence": "high|medium|low" }
+  ],
+  "whatChanged": [
+    { "claim": "...", "evidence": "...", "source": "...", "date": "...", "confidence": "high|medium|low" }
+  ],
+  "evidenceFor": [
+    { "point": "...", "source": "...", "confidence": "high|medium|low" }
+  ],
+  "evidenceAgainst": [
+    { "point": "...", "source": "...", "confidence": "high|medium|low" }
+  ],
+  "possibleMispricing": "What investors may be getting wrong right now.",
+  "sourceList": [
+    { "publication": "...", "url": "...", "date": "...", "supports": "which claim" }
+  ],
+  "recommendedAngle": "The sharpest, most contrarian newsletter angle this data supports."
+}`;
+
+    const resRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: resSystem,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Research query: ${finalQuery}
+
+Scope:
+- Market: ${sc.market}
+- Recent window: ${sc.recent}
+- Historical context: ${sc.context}
+- Reader type: ${sc.reader}
+- Depth: ${depthMap[cfg.depth]}
+
+Flag all uncertainty clearly. Do not fabricate sources. If a source URL is unknown, list the publication name and date only.`
+        }]
+      })
+    });
+
+    if (!resRes.ok) { const e=await resRes.json(); throw new Error('Research: '+(e.error?.message||resRes.status)); }
+    const resData = await resRes.json();
+    const resRaw = resData.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const research = xJSON(resRaw);
+
+    log(1, `Market snapshot: ${research.marketSnapshot?.length||0} claims`, 'ok');
+    log(1, `Evidence for: ${research.evidenceFor?.length||0} | Against: ${research.evidenceAgainst?.length||0}`, 'ok');
+    log(1, `Sources: ${research.sourceList?.length||0} cited`, research.sourceList?.length > 2 ? 'ok' : 'warn');
+    log(1, `Recommended angle: "${(research.recommendedAngle||'').substring(0,60)}…"`, 'info');
+    stageSet(1, 'done', `${(research.marketSnapshot?.length||0)+(research.evidenceFor?.length||0)} claims`);
+    ps(1, 'done');
+    await new Promise(r=>setTimeout(r,400));
+
+    // ══════════════════════════════════════
+    // STAGE 2: THESIS AGENT
+    // ══════════════════════════════════════
+    stageSet(2, 'active', 'Building thesis…');
+    ps(2, 'active');
+    log(2, 'Receiving research briefing');
+    log(2, 'Evaluating bull / base / bear cases…');
+    log(2, 'Testing contrarian hypothesis…');
+
+    const thesisSystem = `You are a senior investment editor and thesis agent. You receive a structured research briefing and must decide the central argument for the newsletter. You do NOT write prose. You decide what the article should argue.
+
+Return ONLY valid JSON, no fences:
+{
+  "centralThesis": "One crisp sentence — the argument the newsletter will make.",
+  "thesisBasis": "Why this thesis, not another — what in the research drives it.",
+  "bullCase": "Best case scenario and what would drive it.",
+  "baseCase": "Most probable scenario.",
+  "bearCase": "What could go wrong / what the bears see.",
+  "whatInvestorsMispricing": "The specific thing most investors are currently getting wrong about this.",
+  "contrarianTest": "The hardest question a skeptic would ask about this thesis.",
+  "contrarianAnswer": "The honest answer to that question.",
+  "newsletterAngle": "The exact angle and framing for the article.",
+  "confidence": "high|medium|low",
+  "confidenceRationale": "Why this confidence level."
+}`;
+
+    const thesisRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        system: thesisSystem,
+        messages: [{
+          role: 'user',
+          content: `Research briefing:
+${JSON.stringify(research, null, 2)}
+
+Contrarian lean: ${sc.contrarian}
+Reader horizon: ${sc.horizon}
+Reader type: ${sc.reader}
+
+Build the thesis.`
+        }]
+      })
+    });
+
+    if (!thesisRes.ok) { const e=await thesisRes.json(); throw new Error('Thesis: '+(e.error?.message||thesisRes.status)); }
+    const thesisData = await thesisRes.json();
+    const thesisRaw = thesisData.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const thesis = xJSON(thesisRaw);
+
+    log(2, `Thesis: "${(thesis.centralThesis||'').substring(0,70)}…"`, 'ok');
+    log(2, `Confidence: ${thesis.confidence}`, thesis.confidence==='high'?'ok':thesis.confidence==='medium'?'warn':'err');
+    log(2, `Contrarian test passed: ${(thesis.contrarianTest||'').substring(0,50)}…`, 'info');
+    stageSet(2, 'done', `Confidence: ${thesis.confidence}`);
+    ps(2, 'done');
+
+    // Render thesis panel
+    renderThesis(thesis);
+    await new Promise(r=>setTimeout(r,400));
+
+    // ══════════════════════════════════════
+    // STAGE 3: WRITER AGENT
+    // ══════════════════════════════════════
+    stageSet(3, 'active', 'Writing…');
+    ps(3, 'active');
+    log(3, 'Received thesis brief');
+    log(3, `Angle: ${(thesis.newsletterAngle||'').substring(0,60)}…`);
+    log(3, 'Writing lede…');
+
+    const lenMap = {
+      short: '400–600 words. Tight lede, one main argument, punchy close.',
+      standard: '750–1000 words. 2-3 sections, narrative arc, clear investor takeaway.',
+      long: '1200–1600 words. Full issue with multiple sections, contrarian challenge, data, and a clear investment question.'
+    };
+
+    const writerSystem = `You are the writer for "The Augmented Investor."
+
+VOICE: Sharp, contrarian, never boring. Write for sophisticated investors tired of being talked down to. Lead with what everyone's missing. One sharp sentence beats three safe ones. Name the tension. Always land on what this means for money. Never say "it remains to be seen." No preamble. No hedging. Cite your evidence.
+
+Return ONLY valid JSON, no fences:
+{
+  "issue_number": "${issueNum}",
+  "date": "May 2026",
+  "subject_line": "Email subject line — punchy, under 58 chars",
+  "title": "Issue headline — sharp, under 9 words",
+  "subtitle": "One italic subhead line",
+  "lede": "Opening paragraph. 2-3 sentences. Most important. Must hook immediately.",
+  "body": "Full newsletter body as HTML. Use <p> <h2> <h3> <strong> <em>. Include at least one <blockquote><p>pullquote</p></blockquote>. Cite sources inline as (Source, Date). End with a clear investor question or action.",
+  "sources_used": ["list of source names used"],
+  "word_count": number,
+  "contrarian_score": "1-10"
+}`;
+
+    const writerRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: writerSystem,
+        messages: [{
+          role: 'user',
+          content: `Write the newsletter issue.
+
+THESIS BRIEF:
+- Central thesis: ${thesis.centralThesis}
+- Newsletter angle: ${thesis.newsletterAngle}
+- Bull case: ${thesis.bullCase}
+- Base case: ${thesis.baseCase}
+- Bear case: ${thesis.bearCase}
+- What investors are mispricing: ${thesis.whatInvestorsMispricing}
+- Contrarian test: ${thesis.contrarianTest}
+- Answer: ${thesis.contrarianAnswer}
+
+KEY RESEARCH FACTS TO USE:
+${(research.marketSnapshot||[]).slice(0,4).map(c=>`- ${c.claim} (${c.source}, ${c.date})`).join('\n')}
+${(research.evidenceFor||[]).slice(0,3).map(c=>`- FOR: ${c.point} (${c.source})`).join('\n')}
+${(research.evidenceAgainst||[]).slice(0,3).map(c=>`- AGAINST: ${c.point} (${c.source})`).join('\n')}
+Possible mispricing: ${research.possibleMispricing}
+
+Length: ${lenMap[cfg.length]}
+Contrarian lean: ${sc.contrarian}`
+        }]
+      })
+    });
+
+    if (!writerRes.ok) { const e=await writerRes.json(); throw new Error('Writer: '+(e.error?.message||writerRes.status)); }
+    const writerData = await writerRes.json();
+    const writerRaw = writerData.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const draft = xJSON(writerRaw);
+
+    log(3, `Draft complete — ~${draft.word_count||'?'} words`, 'ok');
+    log(3, `Contrarian score: ${draft.contrarian_score}/10`, draft.contrarian_score>=7?'ok':'warn');
+    log(3, 'Sending to review queue…', 'ok');
+    stageSet(3, 'done', `~${draft.word_count||'?'} words`);
+    ps(3, 'done');
+    ps(4, 'active');
+
+    renderDraft(draft, research);
+    await new Promise(r=>setTimeout(r,300));
+    ps(4, 'done');
+
+    document.getElementById('reviewSection').classList.add('visible');
+    document.getElementById('reviewSection').scrollIntoView({ behavior:'smooth', block:'start' });
+
+  } catch(err) {
+    const eb = document.getElementById('errorBar');
+    eb.textContent = '⚠ ' + err.message;
+    eb.classList.add('visible');
+    for (let i=0;i<4;i++) {
+      if (document.getElementById('s'+i).classList.contains('active')) {
+        stageSet(i, 'err', 'Failed');
+        log(i, err.message, 'err');
+      }
+    }
+  } finally {
+    isRunning = false;
+    document.getElementById('runBtn').disabled = false;
+    document.getElementById('runBtn').textContent = 'Run Pipeline →';
+  }
+}
+
+function renderThesis(t) {
+  document.getElementById('thesisStatement').textContent = t.centralThesis || '';
+  document.getElementById('tcBull').textContent = t.bullCase || '';
+  document.getElementById('tcBase').textContent = t.baseCase || '';
+  document.getElementById('tcBear').textContent = t.bearCase || '';
+  document.getElementById('tcMispricing').textContent = t.whatInvestorsMispricing || '';
+  document.getElementById('thesisConfidence').textContent = `Confidence: ${t.confidence || '?'} — ${t.confidenceRationale || ''}`;
+  document.getElementById('thesisPanel').classList.add('visible');
+}
+
+function renderDraft(d, research) {
+  const body = (d.body||'')
+    .replace(/<blockquote>/g,'<div class="nl-pq">')
+    .replace(/<\/blockquote>/g,'</div>');
+
+  // Build source list
+  const sources = (research.sourceList||[]);
+  const srcHTML = sources.length ? `
+    <div class="nl-sources">
+      <div class="nl-sources-label">Sources</div>
+      ${sources.map(s=>`<div class="nl-source-item">· ${esc(s.publication)}${s.date?' ('+esc(s.date)+')':''}${s.url&&s.url.startsWith('http')?` — <a href="${esc(s.url)}" target="_blank" style="color:#6a6050">${esc(s.url.substring(0,50))}…</a>`:''}${s.supports?' — '+esc(s.supports):''}</div>`).join('')}
+    </div>` : '';
+
+  document.getElementById('nlRender').innerHTML = `
+    <div class="nl-meta">Issue ${d.issue_number} · ${d.date}</div>
+    <div class="nl-title">${esc(d.title)}</div>
+    <div class="nl-sub">${esc(d.subtitle)}</div>
+    <hr class="nl-rule">
+    <div class="nl-lede">${esc(d.lede)}</div>
+    <hr class="nl-rule-sm">
+    <div class="nl-body">${body}</div>
+    ${srcHTML}
+    <div class="nl-footer">
+      <span>The Augmented Investor</span>
+      <span>Subject: ${esc(d.subject_line||'')}</span>
+    </div>
+  `;
+
+  document.getElementById('bdgWords').textContent = `~${d.word_count||'?'} words`;
+  document.getElementById('bdgContrarian').textContent = `Contrarian: ${d.contrarian_score}/10`;
+  document.getElementById('bdgSubject').textContent = d.subject_line||'';
+  document.getElementById('nlRender').dataset.draft = JSON.stringify(d);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function approve() {
+  document.getElementById('approvedBar').classList.add('visible');
+  document.getElementById('approvedBar').scrollIntoView({behavior:'smooth'});
+  issueNum++;
+}
+
+function rewrite() {
+  document.getElementById('reviewSection').classList.remove('visible');
+  document.getElementById('thesisPanel').classList.remove('visible');
+  document.getElementById('pipeline').classList.remove('visible');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function cpHTML() {
+  navigator.clipboard.writeText(document.getElementById('nlRender').innerHTML)
+    .then(()=>alert('HTML copied.'));
+}
+
+function cpText() {
+  navigator.clipboard.writeText(document.getElementById('nlRender').innerText)
+    .then(()=>alert('Plain text copied.'));
+}
+
+// Enter in rough input triggers refine
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('roughInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); refinePrompt(); }
+  });
+});
+</script>
+</body>
+</html>
