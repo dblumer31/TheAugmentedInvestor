@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import AliasChoices, Field, field_validator
+from pydantic import AliasChoices, Field, field_validator, model_validator
 
 from augmented_investor.models.common import ClaimType as ClaimTypeValue
 from augmented_investor.models.common import SourceQuality as SourceQualityValue
@@ -211,3 +211,30 @@ class ResearchBrief(StrictBaseModel):
         validation_alias=AliasChoices("RecommendedAngle", "recommendedAngle"),
     )
     Provider: str | None = Field(default=None, validation_alias=AliasChoices("Provider", "provider"))
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_claim_like_points(cls, Value):
+        """Allow prior-trend and what-changed bullets to arrive as `point` entries."""
+
+        if not isinstance(Value, dict):
+            return Value
+        for FieldName in ("priorTrend", "PriorTrend", "whatChanged", "WhatChanged"):
+            Items = Value.get(FieldName)
+            if isinstance(Items, list):
+                Value[FieldName] = [_point_to_claim_item(Item) for Item in Items]
+        return Value
+
+
+def _point_to_claim_item(item):
+    """Convert a claim-like research item from point-key shape to claim-key shape."""
+
+    if isinstance(item, dict) and "point" in item and "claim" not in item and "Claim" not in item:
+        Normalized = {**item, "claim": item["point"]}
+        Normalized.pop("point", None)
+        return Normalized
+    if isinstance(item, dict) and "Point" in item and "claim" not in item and "Claim" not in item:
+        Normalized = {**item, "Claim": item["Point"]}
+        Normalized.pop("Point", None)
+        return Normalized
+    return item

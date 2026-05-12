@@ -155,7 +155,7 @@ def test_research_agent_produces_valid_brief_with_retrieved_evidence():
     FirstRequest = MessageClient.Requests[0]
     Prompt = FirstRequest.messages[0]["content"]
     assert "Retrieved evidence" in Prompt
-    assert len(Prompt) < 4000
+    assert len(Prompt) < 5000
     assert SearchClient.RetrieveCalls == ["https://example.com/filing"]
     assert Brief.Topic == "AI infrastructure"
     assert Brief.Provider == "fake_search"

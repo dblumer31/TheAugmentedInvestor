@@ -24,6 +24,20 @@ def _draft() -> DraftIssue:
     )
 
 
+def _markdown_style_draft() -> DraftIssue:
+    """Return a draft fixture shaped like live writer output."""
+
+    return DraftIssue(
+        subjectLine="AI infrastructure",
+        title="The Durability Question",
+        subtitle="A contrarian read",
+        lede="AI demand may last.",
+        body="**The Setup**\n\nDemand is durable.\n\n*Scenario analysis - Bull:* growth continues.",
+        sourcesUsed=["Company filings"],
+        wordCount=120,
+    )
+
+
 def _research() -> ResearchBrief:
     """Return a research fixture with a source list."""
 
@@ -77,3 +91,15 @@ def test_html_export_escapes_metadata_and_includes_body():
     assert "<p>Demand is durable.</p>" in Html
     assert "Company filings" in Html
     assert "Fact Check" in Html
+
+
+def test_html_export_renders_markdown_style_body_as_article_html():
+    """Live writer Markdown-style bodies should render as readable HTML."""
+
+    Html = export_html(_markdown_style_draft(), _research(), _fact_check())
+
+    assert "<style>" in Html
+    assert "<h2>The Setup</h2>" in Html
+    assert "<p>Demand is durable.</p>" in Html
+    assert "<em>Scenario analysis - Bull:</em>" in Html
+    assert "**The Setup**" not in Html

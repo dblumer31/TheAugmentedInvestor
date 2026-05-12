@@ -53,6 +53,14 @@ This folder contains user stories for the Python rewrite of The Augmented Invest
 
 ---
 
+## Sprint 5: Operator GUI
+
+| Story | Title | Type | Points | Status | Dependencies |
+|-------|-------|------|--------|--------|--------------|
+| [US-013](./US-013-fastapi-operator-gui.md) | FastAPI Operator GUI | Feature | 8 | Pending | US-006, US-011, US-012 |
+
+---
+
 ## Dependency Graph
 
 ```text
@@ -74,6 +82,9 @@ Sprint 3:
 
 Sprint 4:
   US-002 through US-011 ─▶ US-012 End-To-End Tests And Quality
+
+Sprint 5:
+  US-006 + US-011 + US-012 ─▶ US-013 FastAPI Operator GUI
 ```
 
 ---

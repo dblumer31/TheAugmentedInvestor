@@ -280,6 +280,17 @@ def _print_error(prefix: str, error: Exception) -> int:
     """Print a concise CLI error and return a failure exit code."""
 
     print(f"{prefix}: {error}", file=sys.stderr)
+    RequestSummary = getattr(error, "request_summary", None)
+    if RequestSummary:
+        _print_request_summary(RequestSummary)
+    ValidationErrors = getattr(error, "validation_errors", None)
+    if ValidationErrors:
+        print("Validation errors:", file=sys.stderr)
+        print(json.dumps(ValidationErrors, indent=2, default=str), file=sys.stderr)
+    RawPreview = getattr(error, "raw_preview", None)
+    if RawPreview:
+        print("Raw output preview:", file=sys.stderr)
+        print(RawPreview, file=sys.stderr)
     return 1
 
 

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from pydantic import AliasChoices, Field
+import json
+from typing import Any
+
+from pydantic import AliasChoices, Field, model_validator
 
 from augmented_investor.models.common import StrictBaseModel
 
@@ -43,5 +46,70 @@ class ThesisBrief(StrictBaseModel):
         validation_alias=AliasChoices("ConfidenceRationale", "confidenceRationale"),
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_live_thesis_shape(cls, Value):
+        """Normalize richer live LLM thesis objects into the strict contract."""
+
+        if not isinstance(Value, dict):
+            return Value
+        Normalized = dict(Value)
+        Normalized.pop("topic", None)
+        Normalized.pop("Topic", None)
+        for FieldName in ("bullCase", "BullCase", "baseCase", "BaseCase", "bearCase", "BearCase"):
+            if FieldName in Normalized:
+                Normalized[FieldName] = _stringify_thesis_value(Normalized[FieldName])
+        for FieldName in ("confidence", "Confidence"):
+            if FieldName in Normalized:
+                Normalized[FieldName] = _stringify_confidence_value(Normalized[FieldName])
+        for FieldName in ("scenarioMath", "ScenarioMath"):
+            if FieldName in Normalized:
+                Normalized[FieldName] = _normalize_scenario_math(Normalized[FieldName])
+        return Normalized
+
 
 ScenarioMath = ScenarioMathDetails
+
+
+def _stringify_thesis_value(value: Any) -> str:
+    """Convert richer case objects into readable single-string thesis cases."""
+
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        PreferredParts = [
+            value.get(Key)
+            for Key in ("summary", "case", "description", "rationale", "thesis")
+            if value.get(Key)
+        ]
+        if PreferredParts:
+            return " ".join(str(Part) for Part in PreferredParts)
+    return json.dumps(value, default=str)
+
+
+def _stringify_confidence_value(value: Any) -> str:
+    """Convert confidence objects into a compact confidence label."""
+
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        for Key in ("level", "rating", "confidence", "score"):
+            if value.get(Key):
+                return str(value[Key])
+    return json.dumps(value, default=str)
+
+
+def _normalize_scenario_math(value: Any) -> Any:
+    """Drop unsupported scenario-math keys and map scenarios to projections."""
+
+    if not isinstance(value, dict):
+        return value
+    Projections = value.get("projections") or value.get("Projections") or value.get("scenarios") or []
+    if isinstance(Projections, list):
+        ProjectionStrings = [_stringify_thesis_value(Item) for Item in Projections]
+    else:
+        ProjectionStrings = [_stringify_thesis_value(Projections)]
+    return {
+        "included": bool(value.get("included", value.get("Included", ProjectionStrings))),
+        "projections": ProjectionStrings,
+    }

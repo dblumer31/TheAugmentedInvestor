@@ -19,7 +19,7 @@ from augmented_investor.pipeline.json_parser import (
 
 DEFAULT_SEARCH_LIMIT = 5
 DEFAULT_EVIDENCE_CHAR_LIMIT = 1000
-RESEARCH_MAX_TOKENS = 4000
+RESEARCH_MAX_TOKENS = 8000
 PROMPT_PATH = Path(__file__).resolve().parents[1] / "prompts" / "research.md"
 
 

@@ -23,7 +23,7 @@ from augmented_investor.pipeline.fact_check_postprocess import (
 )
 
 
-FACT_CHECK_MAX_TOKENS = 3500
+FACT_CHECK_MAX_TOKENS = 8000
 PROMPT_PATH = Path(__file__).resolve().parents[1] / "prompts" / "fact_check.md"
 
 

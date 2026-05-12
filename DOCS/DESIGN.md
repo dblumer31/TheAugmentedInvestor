@@ -361,9 +361,34 @@ Initial adapters:
 - `ExternalSearchClient` for a later approved provider such as Bing Search API, Tavily,
   SerpAPI, or Exa.
 
-### 6.4 FastAPI Route Shape
+### 6.4 Operator Interface Strategy
 
-The UI can be server-rendered pages or JSON endpoints. A minimal route set:
+The first implemented operator interface is CLI-based. It calls the artifact store,
+orchestrator, operator-interface helpers, and exporters directly. This keeps the workflow
+usable while provider integration and JSON contracts stabilize.
+
+The next operator interface should be a local FastAPI GUI over the same backend helpers.
+The GUI must not duplicate workflow logic or bypass persisted run artifacts.
+
+CLI command coverage:
+
+| Command | Purpose |
+|---------|---------|
+| `create-run` | Create a run from scope JSON input. |
+| `run-research` | Run the Research Agent. |
+| `run-thesis` | Run the Thesis Agent. |
+| `approve-thesis` | Persist thesis approval. |
+| `reject-thesis` | Persist thesis rejection. |
+| `write-draft` | Run the Writer Agent. |
+| `fact-check` | Run fact-check stage. |
+| `apply-fix-pass` | Apply fix pass. |
+| `recheck` | Run re-check against fixed draft. |
+| `review-run` | Display current draft, sources, fact-check state, and export options. |
+| `export-run` | Write `issue.html` and `issue.md`. |
+
+### 6.5 FastAPI Route Shape
+
+The GUI can be server-rendered pages with form actions or JSON endpoints. A minimal route set:
 
 | Route | Method | Purpose |
 |-------|--------|---------|
@@ -377,6 +402,16 @@ The UI can be server-rendered pages or JSON endpoints. A minimal route set:
 | `/runs/{runId}/fix-pass` | POST | Apply fix pass. |
 | `/runs/{runId}/recheck` | POST | Re-check fixed draft. |
 | `/runs/{runId}/export` | POST | Write final export files. |
+
+Recommended page behavior:
+
+- `GET /` should render a scope-entry form and recent local run guidance.
+- `GET /runs/{runId}` should render run state, stage artifacts, thesis approval controls,
+  current draft preview, source list, fact-check state, and export links.
+- Stage forms should submit to the route matching the relevant orchestrator method and then
+  redirect back to `GET /runs/{runId}`.
+- Errors should be shown on the run page with redacted provider diagnostics only.
+- Export links should point to files in the run folder or to a safe file-serving endpoint.
 
 ---
 
@@ -638,7 +673,7 @@ Store full Radon reports in `DOCS/Radon Checks/` using the documented naming con
 2. Copy `example.env` values into the runtime environment outside source control.
 3. Run unit tests.
 4. Run the Foundry smoke test only when credentials are intentionally available.
-5. Start the FastAPI app or CLI.
+5. Use the CLI for the current interface, or start the FastAPI GUI after the GUI story is implemented.
 
 ### 12.2 Runtime Modes
 
@@ -650,7 +685,7 @@ Store full Radon reports in `DOCS/Radon Checks/` using the documented naming con
 
 ### 12.3 First Vertical Slice
 
-The first working slice should implement:
+The first working slice has implemented:
 
 1. Config and fake-safe settings.
 2. Foundry smoke test.
@@ -659,7 +694,22 @@ The first working slice should implement:
 5. Mocked orchestrator path through Scope -> Research -> Thesis -> Draft.
 6. Fact-check and fix-pass model contracts.
 7. Markdown/HTML export.
-8. Minimal UI or CLI controls.
+8. CLI controls for running, reviewing, and exporting issues.
+
+### 12.4 Next Interface Slice
+
+The next operator-interface slice should add the FastAPI GUI described in Section 6.5.
+It should be implemented as a thin web layer over the existing pipeline:
+
+1. Scope-entry page.
+2. Run review page.
+3. Stage action buttons.
+4. Thesis approval/rejection controls.
+5. Draft/source/fact-check panels.
+6. Export links for `issue.html` and `issue.md`.
+
+The GUI should reuse the same `ArtifactStore`, `PipelineOrchestrator`,
+`operator_interface`, and exporter modules used by the CLI.
 
 ---
 
@@ -675,7 +725,7 @@ The first working slice should implement:
 | FR-2.6 Fact Checking | Sections 5.4, 7.5, 9 |
 | FR-2.7 Fix Pass And Re-Check | Sections 7.6, 7.7 |
 | FR-2.8 Provider Integration | Sections 6.2, 8, 12 |
-| FR-2.9 UI, CLI, And Export | Sections 2, 6.4, 7.7 |
+| FR-2.9 UI, CLI, And Export | Sections 2, 6.4, 6.5, 7.7, 12 |
 
 ---
 

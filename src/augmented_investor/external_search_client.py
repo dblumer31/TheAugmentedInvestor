@@ -30,11 +30,14 @@ class SearchProviderError(RuntimeError):
         message: str,
         status_code: int | None = None,
         request_summary: dict[str, Any] | None = None,
+        cause: str | None = None,
     ) -> None:
-        super().__init__(message)
+        DisplayMessage = f"{message}: {cause}" if cause else message
+        super().__init__(DisplayMessage)
         self.message = message
         self.status_code = status_code
         self.request_summary = request_summary or {}
+        self.cause = cause
 
 
 class SearchClient(Protocol):
@@ -138,6 +141,7 @@ class FoundryToolSearchClient:
                 Error.message,
                 status_code=Error.status_code,
                 request_summary=Error.request_summary,
+                cause=Error.cause,
             ) from Error
 
 

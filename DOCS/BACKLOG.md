@@ -15,9 +15,9 @@
 
 ---
 
-## Current Sprint: Sprint 3
+## Current Sprint: Sprint 5
 
-**Sprint Goal:** Add review, repair, re-check, and export behavior.  
+**Sprint Goal:** Add a local FastAPI operator GUI over the completed pipeline.  
 **Sprint Duration:** TBD
 
 ### Sprint 1 Stories
@@ -79,11 +79,25 @@
 
 ---
 
+## Sprint 5 (Planned)
+
+**Sprint Goal:** Add a local web interface for editor operation.
+
+### Sprint 5 Stories
+
+| Story | Title | Points | Status | Notes |
+|-------|-------|--------|--------|-------|
+| US-013 | FastAPI Operator GUI | 8 | 📋 | Thin GUI over existing artifact-backed pipeline |
+
+**Planned Points:** 8
+
+---
+
 ## Backlog (Unprioritized)
 
 | Story | Title | Points | Priority | Notes |
 |-------|-------|--------|----------|-------|
-| TBD | Targeted Research Addendum | TBD | Medium | Future enhancement after base flow is stable |
+| TBD | Targeted Research Addendum | TBD | Medium | Future enhancement after base flow and GUI are stable |
 | TBD | Database-Backed Issue History | TBD | Low | Out of scope for first implementation |
 | TBD | Automated Newsletter Publishing | TBD | Low | Out of scope for first implementation |
 
@@ -135,6 +149,7 @@
 | Sprint 2 | 24 | 24 | 100% |
 | Sprint 3 | 21 | 21 | 100% |
 | Sprint 4 | 5 | 5 | 100% |
+| Sprint 5 | 8 | 0 | 0% |
 
 ---
 

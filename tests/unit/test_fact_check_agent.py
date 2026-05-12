@@ -85,6 +85,7 @@ def test_fact_check_agent_merges_llm_report_with_deterministic_flags():
 
     Report = FactCheckAgent(MessageClient).run(_draft(), _research())
 
+    assert MessageClient.Requests[0].max_tokens == 8000
     Categories = {Flag.Category for Flag in Report.Flags}
     assert FactCheckCategory.InvestmentAdvice in Categories
     assert FactCheckCategory.ScenarioMathUnlabeled in Categories

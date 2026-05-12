@@ -22,6 +22,7 @@ from augmented_investor.models.fact_check import (
 from augmented_investor.models.research import ResearchBrief, ResearchClaim
 from augmented_investor.models.run_artifact import RunArtifact
 from augmented_investor.models.scope import ScopeRequest
+from augmented_investor.models.thesis import ThesisBrief
 
 
 def test_scope_request_validates_required_text():
@@ -78,10 +79,74 @@ def test_research_brief_uses_mutable_default_factories():
     assert Second.MarketSnapshot == []
 
 
+def test_research_brief_accepts_point_keys_for_claim_like_sections():
+    """Live research output may use point keys for prior-trend style bullets."""
+
+    Brief = ResearchBrief.model_validate(
+        {
+            "topic": "AI infrastructure",
+            "priorTrend": [
+                {
+                    "point": "Capex was already rising.",
+                    "claimType": "company_financial",
+                    "source": "Company filing",
+                    "sourceQuality": "company_filing_or_ir",
+                    "supportsExactClaim": True,
+                    "confidence": "medium",
+                }
+            ],
+            "whatChanged": [
+                {
+                    "point": "Cloud growth accelerated.",
+                    "claimType": "company_financial",
+                    "source": "Company filing",
+                    "sourceQuality": "company_filing_or_ir",
+                    "supportsExactClaim": True,
+                    "confidence": "medium",
+                }
+            ],
+        }
+    )
+
+    assert Brief.PriorTrend[0].Claim == "Capex was already rising."
+    assert Brief.WhatChanged[0].Claim == "Cloud growth accelerated."
+
+
 def test_source_evidence_is_canonical_for_search_client():
     """Search clients and model consumers should use the same SourceEvidence class."""
 
     assert SearchSourceEvidence is SourceEvidence
+
+
+def test_thesis_brief_normalizes_rich_live_output_shape():
+    """Live thesis output may include richer objects than the persisted contract."""
+
+    Thesis = ThesisBrief.model_validate(
+        {
+            "topic": "AI infrastructure",
+            "centralThesis": "Demand is durable.",
+            "thesisBasis": "Research supports the thesis.",
+            "bullCase": {"summary": "Demand accelerates.", "rationale": "Backlogs stay high."},
+            "baseCase": {"description": "Demand normalizes."},
+            "bearCase": {"case": "Depreciation compresses margins."},
+            "scenarioMath": {
+                "included": True,
+                "disclaimer": "Scenario only.",
+                "scenarios": [{"summary": "Utilization remains high."}],
+            },
+            "whatMispricing": "Energy constraints are underpriced.",
+            "contrarianTest": "What if capex is overbuild?",
+            "newsletterAngle": "Durability versus depreciation.",
+            "confidence": {"level": "medium", "rationale": "Evidence is mixed."},
+            "confidenceRationale": "The evidence is credible but incomplete.",
+        }
+    )
+
+    assert Thesis.BullCase == "Demand accelerates. Backlogs stay high."
+    assert Thesis.BaseCase == "Demand normalizes."
+    assert Thesis.BearCase == "Depreciation compresses margins."
+    assert Thesis.ScenarioMath.Projections == ["Utilization remains high."]
+    assert Thesis.Confidence == "medium"
 
 
 def test_source_evidence_rejects_naive_datetime_and_normalizes_offset():

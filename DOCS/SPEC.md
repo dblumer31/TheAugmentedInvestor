@@ -336,18 +336,33 @@ Out of scope for the first implementation:
 
 #### FR-2.9.1 Replace Browser-Only Interactions
 
-**Description:** The Python app must replace the prototype's browser state, buttons, and clipboard actions with explicit UI or CLI behavior.
+**Description:** The Python app must replace the prototype's browser state, buttons, and clipboard actions with explicit operator-interface behavior. The first implementation uses CLI commands; a FastAPI GUI is a follow-up operator interface over the same persisted pipeline.
 
 **Acceptance Criteria:**
 
 - [ ] In-memory JS variables such as saved research, thesis, draft, and fact-check state are represented by persisted artifacts.
-- [ ] Thesis approval, apply fixes, copy/export HTML, and copy/export text are exposed as FastAPI routes, UI form actions, or CLI commands.
+- [ ] Thesis approval, apply fixes, copy/export HTML, and copy/export text are exposed as CLI commands in the first slice.
 - [ ] Review state is represented by persisted run status.
 - [ ] Clipboard actions become export files.
 
 **Priority:** High
 
-#### FR-2.9.2 Export Final Issue
+#### FR-2.9.2 Add FastAPI Operator GUI
+
+**Description:** The system should provide a local FastAPI GUI that exposes the existing artifact-backed pipeline through web forms and buttons without duplicating stage logic.
+
+**Acceptance Criteria:**
+
+- [ ] The GUI provides a scope-entry form that creates a persisted run.
+- [ ] The GUI displays current run status and completed artifacts.
+- [ ] The GUI exposes buttons for research, thesis generation, thesis approval/rejection, draft generation, fact-check, fix pass, re-check, and export.
+- [ ] The GUI displays the current draft, source list, thesis state, fact-check state, and export links.
+- [ ] The GUI calls the same orchestrator, artifact store, operator-interface helpers, and exporters used by the CLI.
+- [ ] The GUI does not require browser clipboard access to export HTML or Markdown.
+
+**Priority:** High
+
+#### FR-2.9.3 Export Final Issue
 
 **Description:** The system must export approved or review-ready issues in portable formats.
 
