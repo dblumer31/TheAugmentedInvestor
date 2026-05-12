@@ -31,6 +31,14 @@ class DraftIssue(StrictBaseModel):
         default=None,
         validation_alias=AliasChoices("ContrarianScore", "contrarianScore"),
     )
+    AddressedFlagCategories: list[str] = Field(
+        default_factory=list,
+        validation_alias=AliasChoices("AddressedFlagCategories", "addressedFlagCategories"),
+    )
+    FixPassActions: list[str] = Field(
+        default_factory=list,
+        validation_alias=AliasChoices("FixPassActions", "fixPassActions"),
+    )
 
     @field_validator("WordCount")
     @classmethod

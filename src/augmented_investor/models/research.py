@@ -91,6 +91,10 @@ class ResearchClaim(StrictBaseModel):
         default=None,
         validation_alias=AliasChoices("Instrument", "instrument"),
     )
+    InstrumentPrecision: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("InstrumentPrecision", "instrumentPrecision"),
+    )
     ClaimType: ClaimTypeValue = Field(validation_alias=AliasChoices("ClaimType", "claimType"))
     Source: str = Field(validation_alias=AliasChoices("Source", "source"))
     SourceQuality: SourceQualityValue = Field(
@@ -111,6 +115,14 @@ class ResearchPoint(StrictBaseModel):
     """A pro/con evidence point with source quality metadata."""
 
     Point: str = Field(validation_alias=AliasChoices("Point", "point"))
+    Instrument: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("Instrument", "instrument"),
+    )
+    InstrumentPrecision: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("InstrumentPrecision", "instrumentPrecision"),
+    )
     ClaimType: ClaimTypeValue = Field(validation_alias=AliasChoices("ClaimType", "claimType"))
     Source: str = Field(validation_alias=AliasChoices("Source", "source"))
     SourceQuality: SourceQualityValue = Field(

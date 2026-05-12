@@ -29,9 +29,9 @@ This folder contains user stories for the Python rewrite of The Augmented Invest
 
 | Story | Title | Type | Points | Status | Dependencies |
 |-------|-------|------|--------|--------|--------------|
-| [US-006](./US-006-artifact-store-and-orchestrator.md) | Artifact Store And Pipeline Orchestrator | Feature | 8 | Pending | US-005 |
-| [US-007](./US-007-research-and-retrieval-agent.md) | Research And Retrieval Agent | Feature | 8 | Pending | US-004, US-005, US-006 |
-| [US-008](./US-008-thesis-and-writer-agents.md) | Thesis And Writer Agents | Feature | 8 | Pending | US-006, US-007 |
+| [US-006](./US-006-artifact-store-and-orchestrator%20-%20DONE.md) | Artifact Store And Pipeline Orchestrator | Feature | 8 | Done | US-005 |
+| [US-007](./US-007-research-and-retrieval-agent%20-%20DONE.md) | Research And Retrieval Agent | Feature | 8 | Done | US-004, US-005, US-006 |
+| [US-008](./US-008-thesis-and-writer-agents%20-%20DONE.md) | Thesis And Writer Agents | Feature | 8 | Done | US-006, US-007 |
 
 ---
 
@@ -39,9 +39,9 @@ This folder contains user stories for the Python rewrite of The Augmented Invest
 
 | Story | Title | Type | Points | Status | Dependencies |
 |-------|-------|------|--------|--------|--------------|
-| [US-009](./US-009-fact-check-source-quality.md) | Fact Check And Source Quality Rules | Feature | 8 | Pending | US-007, US-008 |
-| [US-010](./US-010-fix-pass-and-recheck.md) | Fix Pass And Re-Check | Feature | 5 | Pending | US-009 |
-| [US-011](./US-011-ui-cli-and-export.md) | Minimal UI Or CLI And Issue Export | Feature | 8 | Pending | US-006, US-010 |
+| [US-009](./US-009-fact-check-source-quality%20-%20DONE.md) | Fact Check And Source Quality Rules | Feature | 8 | Done | US-007, US-008 |
+| [US-010](./US-010-fix-pass-and-recheck%20-%20DONE.md) | Fix Pass And Re-Check | Feature | 5 | Done | US-009 |
+| [US-011](./US-011-ui-cli-and-export%20-%20DONE.md) | Minimal UI Or CLI And Issue Export | Feature | 8 | Done | US-006, US-010 |
 
 ---
 

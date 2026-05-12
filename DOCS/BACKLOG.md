@@ -15,9 +15,9 @@
 
 ---
 
-## Current Sprint: Sprint 1
+## Current Sprint: Sprint 3
 
-**Sprint Goal:** Establish the Python foundation and validate Azure AI Foundry before building the full pipeline.  
+**Sprint Goal:** Add review, repair, re-check, and export behavior.  
 **Sprint Duration:** TBD
 
 ### Sprint 1 Stories
@@ -33,7 +33,7 @@
 
 ---
 
-## Sprint 2 (Planned)
+## Sprint 2
 
 **Sprint Goal:** Build the persisted pipeline foundation and generate research, thesis, and draft outputs.
 
@@ -41,15 +41,15 @@
 
 | Story | Title | Points | Status | Notes |
 |-------|-------|--------|--------|-------|
-| US-006 | Artifact Store And Pipeline Orchestrator | 8 | 📋 | Enforces stage order and run artifacts |
-| US-007 | Research And Retrieval Agent | 8 | 📋 | Produces structured evidence and stored source excerpts |
-| US-008 | Thesis And Writer Agents | 8 | 📋 | Adds thesis gate and draft generation |
+| US-006 | Artifact Store And Pipeline Orchestrator | 8 | ✅ | Enforces stage order and run artifacts |
+| US-007 | Research And Retrieval Agent | 8 | ✅ | Produces structured evidence and stored source excerpts |
+| US-008 | Thesis And Writer Agents | 8 | ✅ | Adds thesis gate and draft generation |
 
-**Planned Points:** 24
+**Sprint Velocity:** 24 / 24 points completed
 
 ---
 
-## Sprint 3 (Planned)
+## Sprint 3
 
 **Sprint Goal:** Add review, repair, re-check, and export behavior.
 
@@ -57,11 +57,11 @@
 
 | Story | Title | Points | Status | Notes |
 |-------|-------|--------|--------|-------|
-| US-009 | Fact Check And Source Quality Rules | 8 | 📋 | Preserves `citation exists != claim is proven` |
-| US-010 | Fix Pass And Re-Check | 5 | 📋 | Repairs flagged issues and re-checks fixed draft |
-| US-011 | Minimal UI Or CLI And Issue Export | 8 | 📋 | Replaces browser buttons and clipboard actions |
+| US-009 | Fact Check And Source Quality Rules | 8 | ✅ | Preserves `citation exists != claim is proven` |
+| US-010 | Fix Pass And Re-Check | 5 | ✅ | Repairs flagged issues and re-checks fixed draft |
+| US-011 | Minimal UI Or CLI And Issue Export | 8 | ✅ | Adds CLI review and file exports |
 
-**Planned Points:** 21
+**Sprint Velocity:** 21 / 21 points completed
 
 ---
 
@@ -106,6 +106,12 @@
 | US-003 | Azure Foundry Smoke Test | 5 | 2026-05-11 |
 | US-004 | Provider And Search Client Abstractions | 5 | 2026-05-11 |
 | US-005 | Core Models And JSON Validation | 5 | 2026-05-11 |
+| US-006 | Artifact Store And Pipeline Orchestrator | 8 | 2026-05-11 |
+| US-007 | Research And Retrieval Agent | 8 | 2026-05-11 |
+| US-008 | Thesis And Writer Agents | 8 | 2026-05-11 |
+| US-009 | Fact Check And Source Quality Rules | 8 | 2026-05-11 |
+| US-010 | Fix Pass And Re-Check | 5 | 2026-05-11 |
+| US-011 | Minimal UI Or CLI And Issue Export | 8 | 2026-05-11 |
 
 ---
 
@@ -115,7 +121,7 @@
 |----|-------------|--------|------------|--------|
 | RISK-001 | Azure AI Foundry Claude may not support Anthropic web search tools. | Research implementation may require external search provider. | US-003 confirmed tool support and US-004 added `FoundryToolSearchClient`. | Mitigated |
 | RISK-002 | Foundry endpoint path/header/deployment shape may differ from public Anthropic API. | Provider calls may fail if assumptions are wrong. | Endpoint construction centralized and live verification is available through US-003 smoke test. | Mitigated |
-| RISK-003 | Source verification is weak without retrieved evidence. | Fact-check may over-trust model summaries. | Store source excerpts in US-007 and triage claims in US-009. | Open |
+| RISK-003 | Source verification is weak without retrieved evidence. | Fact-check may over-trust model summaries. | US-007 stores source excerpts and US-009 adds source-quality triage. | Mitigated |
 
 ---
 
@@ -125,8 +131,8 @@
 |--------|----------------|-----------|----------|
 | Sprint 0 | N/A | N/A | N/A |
 | Sprint 1 | 18 | 18 | 100% |
-| Sprint 2 | 24 | 0 | 0% |
-| Sprint 3 | 21 | 0 | 0% |
+| Sprint 2 | 24 | 24 | 100% |
+| Sprint 3 | 21 | 21 | 100% |
 | Sprint 4 | 5 | 0 | 0% |
 
 ---
