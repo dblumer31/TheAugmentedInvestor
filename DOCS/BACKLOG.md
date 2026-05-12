@@ -65,7 +65,7 @@
 
 ---
 
-## Sprint 4 (Planned)
+## Sprint 4
 
 **Sprint Goal:** Verify the integrated workflow and complete quality reporting.
 
@@ -73,9 +73,9 @@
 
 | Story | Title | Points | Status | Notes |
 |-------|-------|--------|--------|-------|
-| US-012 | End-To-End Tests And Quality Gates | 5 | 📋 | Adds mocked E2E tests and Radon report |
+| US-012 | End-To-End Tests And Quality Gates | 5 | ✅ | Adds mocked E2E tests and quality reports |
 
-**Planned Points:** 5
+**Sprint Velocity:** 5 / 5 points completed
 
 ---
 
@@ -112,6 +112,7 @@
 | US-009 | Fact Check And Source Quality Rules | 8 | 2026-05-11 |
 | US-010 | Fix Pass And Re-Check | 5 | 2026-05-11 |
 | US-011 | Minimal UI Or CLI And Issue Export | 8 | 2026-05-11 |
+| US-012 | End-To-End Tests And Quality Gates | 5 | 2026-05-11 |
 
 ---
 
@@ -133,7 +134,7 @@
 | Sprint 1 | 18 | 18 | 100% |
 | Sprint 2 | 24 | 24 | 100% |
 | Sprint 3 | 21 | 21 | 100% |
-| Sprint 4 | 5 | 0 | 0% |
+| Sprint 4 | 5 | 5 | 100% |
 
 ---
 

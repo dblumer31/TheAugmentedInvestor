@@ -49,7 +49,7 @@ This folder contains user stories for the Python rewrite of The Augmented Invest
 
 | Story | Title | Type | Points | Status | Dependencies |
 |-------|-------|------|--------|--------|--------------|
-| [US-012](./US-012-end-to-end-tests-and-quality.md) | End-To-End Tests And Quality Gates | Testing | 5 | Pending | US-002 through US-011 |
+| [US-012](./US-012-end-to-end-tests-and-quality%20-%20DONE.md) | End-To-End Tests And Quality Gates | Testing | 5 | Done | US-002 through US-011 |
 
 ---
 

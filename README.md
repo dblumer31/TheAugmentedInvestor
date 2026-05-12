@@ -2,9 +2,101 @@
 
 Proof-of-concept editorial pipeline for **The Augmented Investor**, a newsletter at the intersection of AI, finance, markets, and investing.
 
-The current build is a single-file HTML prototype that tests the agent workflow before committing to a backend, database, or production app structure.
+The current implementation is a Python rewrite of the original single-file HTML prototype.
+The HTML file remains useful as workflow reference material, while the Python package now
+provides persisted run artifacts, agent modules, CLI operations, and file exports.
 
-## Current Prototype
+## Current Python App
+
+Primary package:
+
+```text
+src/augmented_investor/
+```
+
+The Python app runs the same editorial workflow with explicit stage artifacts:
+
+```text
+Scope -> Research -> Thesis Gate -> Write -> Fact Check -> Fix Pass -> Re-Check -> Export
+```
+
+Run artifacts are written under `runs/{run_id}/` and include JSON for each stage plus
+`issue.html` and `issue.md` after export.
+
+### Setup
+
+Install runtime and development dependencies:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
+```
+
+Set `PYTHONPATH` when running from the project root:
+
+```powershell
+$env:PYTHONPATH = "src"
+```
+
+The app reads provider settings from environment variables and can also use a local `.env`
+file that remains outside source control.
+
+### CLI Workflow
+
+Create a scope JSON file, then create a run:
+
+```powershell
+python -m augmented_investor.cli create-run --scope-file .\scope.json
+```
+
+Run the live provider-backed stages:
+
+```powershell
+python -m augmented_investor.cli run-research <run_id>
+python -m augmented_investor.cli run-thesis <run_id>
+python -m augmented_investor.cli approve-thesis <run_id>
+python -m augmented_investor.cli write-draft <run_id>
+python -m augmented_investor.cli fact-check <run_id>
+python -m augmented_investor.cli apply-fix-pass <run_id>
+python -m augmented_investor.cli recheck <run_id>
+```
+
+Review and export:
+
+```powershell
+python -m augmented_investor.cli review-run <run_id>
+python -m augmented_investor.cli export-run <run_id>
+```
+
+The export command writes `issue.html` and `issue.md` to the run folder.
+
+### Tests And Quality
+
+Run the default test suite:
+
+```powershell
+python -m pytest
+```
+
+Run the live Foundry smoke test only when credentials are intentionally configured:
+
+```powershell
+$env:RUN_LIVE_FOUNDRY_TESTS = "1"
+python -m pytest tests/integration/test_foundry_smoke_test.py
+python -m augmented_investor.cli foundry-smoke-test
+```
+
+Run Radon quality checks:
+
+```powershell
+python -m radon cc -a -s src/
+python -m radon mi -s src/
+```
+
+Full test reports are stored in `DOCS/Test Reports/`. Radon reports are stored in
+`DOCS/Radon Checks/`.
+
+## Legacy HTML Prototype
 
 Primary file:
 
@@ -180,7 +272,7 @@ Available actions:
 - Copy HTML
 - Copy text
 
-## Running The POC
+## Running The Legacy POC
 
 Open the HTML file directly in a browser:
 
@@ -188,30 +280,22 @@ Open the HTML file directly in a browser:
 augmented-investor-v3 (9).html
 ```
 
-This is currently a browser-based proof of concept. It is intended for workflow testing, not production deployment.
+The browser-based proof of concept is retained for workflow comparison, not production deployment.
 
 ## Current Limitations
 
-- The prototype is still a single HTML file.
-- It calls model APIs directly from browser code.
-- It does not persist runs between sessions.
-- It does not yet have a true backend orchestrator.
-- It does not save research, thesis, draft, fact-check, and fix-pass artifacts to disk.
+- The Python CLI is the current runnable implementation; the HTML prototype is legacy reference material.
+- The first interface is CLI-based; a FastAPI or web UI can be added later.
 - Addendum flags are surfaced, but targeted research addendum search is not fully implemented.
-- Source-quality scoring is prompt-driven and should still be treated as advisory until backed by deterministic source retrieval or stored source excerpts.
 - Model-generated article HTML is rendered into the page, which should be sanitized in a production implementation.
 
 ## Next Steps
 
-Recommended next POC improvements:
+Recommended next improvements:
 
-- Add a collapsible Research Brief panel.
-- Add a visible Thesis Brief panel after approval.
 - Add targeted Research Addendum support for unsupported claims.
-- Add saved source excerpts so the Fact Check Agent can compare draft claims against exact retrieved text.
 - Add primary market-data lookup for market-return and valuation claims.
-- Save each run as JSON artifacts.
-- Add export to Markdown for Obsidian.
+- Add a FastAPI or web UI on top of the existing artifact-backed pipeline.
 - Add issue history.
 
 Recommended production direction:
